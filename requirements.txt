@@ -8,5 +8,3 @@ uvicorn
 pysqlite3
 requests
 pillow
-webpocket
-threading

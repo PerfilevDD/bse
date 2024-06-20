@@ -104,10 +104,6 @@ file(GLOB SRC_FILES
   ${PROJECT_SOURCE_DIR}/src/bet/*.cpp
         )
 
-file(GLOB TEST_FILES
-        ${PROJECT_SOURCE_DIR}/tests/datatypes/*.cpp
-)
-
 
 # Baue das Programm '---' aus den Quellen
 file(GLOB SRC_FILES
