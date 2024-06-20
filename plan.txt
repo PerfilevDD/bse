@@ -1,0 +1,63 @@
+Client:
+    GUI
+    Send die Wette
+    Get Result vom Server
+Server, Python:
+    Get die Wette
+    Send to C++
+    Interaktion mit der Database
+C++:
+    Random Generator
+    Abchecken von Wetten
+    Send result an Python zurück
+Database:
+    User info:
+        ID, name, balance
+    Wetteninfo:
+        id, user_id, type (Zahl, Farbe...), value, amount (Geld..)
+
+    Mögliche Daten:
+        type: number                        -> valur = Zahl
+              color                         -> value = black/red/green
+              odd/even(ka wie heißt das)    -> odd/even
+              column                        -> value = 1,4,7,10,13,16,19,22,25,28,31,34 / 2,5,8,11,14,18,20,23,26,29,32,35 / 3,6,9,12,15,18,21,24,27,30,33,36
+              dozen                         -> value = 1-12/13-/24/25-36
+
+
+
+1. Client meldet sich an
+1.2 Accept new Client, regestriert den in Database, sendet Bestätigun an Client
+
+2. Wette
+2.1 Client sendet seine Wette (Client)
+2.2 Accept Wette
+2.3 Check if client ist in Database und ob er Balance hat
+2.4 Speichere Wette in Database
+2.5 Sendet Bestätigung an Client(??)
+
+3. Spiel
+3.1 Jede 30 Sekunden wird eine Zahl generiert (Server)
+3.2 Python übergibt alle Wetten an C++
+3.3 Random Zahl (c+=)
+3.4 Check generierte Zahl mit den Wetten
+3.5 Gibt result an python zurück
+3.6 Bearbeitung von result
+3.7 Update user balance etc
+3.8 Löschen alle aktuellen Wetten in Database
+3.9 Senden die Resultaten an Clients
+3.10 Client bekommmt neue Balance etc.
+
+Funktionen:
+New User
+    post /user - Für neuen Spieler
+    Antwort: Bestätigung der Registration
+
+Neue Wette:
+    post /wette - send wette an Server
+    Antowrt: Bestätigung 
+
+Get Result:
+    get /results - Get new Result from a server und balance
+    
+
+
