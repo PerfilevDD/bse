@@ -128,9 +128,11 @@ install(TARGETS fairoulette
 #----------------------------------------------#
 
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-add_executable(test1 tests/test1.cpp ${SRC_FILES}
-        src/bet/bet.cpp
-        include/table/table.hpp)
+add_executable(test_database tests/test_database.cpp ${SRC_FILES}
+        src/db/sqlite.cpp)
+target_link_libraries(test_database GTest::gtest_main)
+target_link_libraries(test_database sqlite3)
+gtest_discover_tests(test_database)
 
 #add_executable(main src/main.cpp)
 #target_link_libraries(main PUBLIC matplot)

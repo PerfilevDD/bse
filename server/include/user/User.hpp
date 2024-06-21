@@ -1,6 +1,8 @@
 #pragma once
 
 #include "string"
+#include "sqlite3.h"
+#include "db/sqlite.hpp"
 
 namespace BSM {
     class User {
@@ -18,5 +20,6 @@ namespace BSM {
         void update_balance(int change);
     private:
         int user_id;
+        Database db;
     };
 }
