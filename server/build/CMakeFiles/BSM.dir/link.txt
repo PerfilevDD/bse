@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -g -shared  -o BSM.cpython-312-x86_64-linux-gnu.so CMakeFiles/BSM.dir/extra/python_bindings.cpp.o CMakeFiles/BSM.dir/src/asset/Asset.cpp.o CMakeFiles/BSM.dir/src/marketplace/Marketplace.cpp.o CMakeFiles/BSM.dir/src/user/User.cpp.o 
