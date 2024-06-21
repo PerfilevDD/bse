@@ -83,17 +83,82 @@ CMakeFiles/BSE.dir/extra/python_bindings.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/BSE.dir/extra/python_bindings.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/DaniilPC/POOSE/BSE/server/extra/python_bindings.cpp -o CMakeFiles/BSE.dir/extra/python_bindings.cpp.s
 
+CMakeFiles/BSE.dir/src/asset/Asset.cpp.o: CMakeFiles/BSE.dir/flags.make
+CMakeFiles/BSE.dir/src/asset/Asset.cpp.o: /home/DaniilPC/POOSE/BSE/server/src/asset/Asset.cpp
+CMakeFiles/BSE.dir/src/asset/Asset.cpp.o: CMakeFiles/BSE.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/DaniilPC/POOSE/BSE/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/BSE.dir/src/asset/Asset.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BSE.dir/src/asset/Asset.cpp.o -MF CMakeFiles/BSE.dir/src/asset/Asset.cpp.o.d -o CMakeFiles/BSE.dir/src/asset/Asset.cpp.o -c /home/DaniilPC/POOSE/BSE/server/src/asset/Asset.cpp
+
+CMakeFiles/BSE.dir/src/asset/Asset.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/BSE.dir/src/asset/Asset.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/DaniilPC/POOSE/BSE/server/src/asset/Asset.cpp > CMakeFiles/BSE.dir/src/asset/Asset.cpp.i
+
+CMakeFiles/BSE.dir/src/asset/Asset.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/BSE.dir/src/asset/Asset.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/DaniilPC/POOSE/BSE/server/src/asset/Asset.cpp -o CMakeFiles/BSE.dir/src/asset/Asset.cpp.s
+
+CMakeFiles/BSE.dir/src/db/sqlite.cpp.o: CMakeFiles/BSE.dir/flags.make
+CMakeFiles/BSE.dir/src/db/sqlite.cpp.o: /home/DaniilPC/POOSE/BSE/server/src/db/sqlite.cpp
+CMakeFiles/BSE.dir/src/db/sqlite.cpp.o: CMakeFiles/BSE.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/DaniilPC/POOSE/BSE/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/BSE.dir/src/db/sqlite.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BSE.dir/src/db/sqlite.cpp.o -MF CMakeFiles/BSE.dir/src/db/sqlite.cpp.o.d -o CMakeFiles/BSE.dir/src/db/sqlite.cpp.o -c /home/DaniilPC/POOSE/BSE/server/src/db/sqlite.cpp
+
+CMakeFiles/BSE.dir/src/db/sqlite.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/BSE.dir/src/db/sqlite.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/DaniilPC/POOSE/BSE/server/src/db/sqlite.cpp > CMakeFiles/BSE.dir/src/db/sqlite.cpp.i
+
+CMakeFiles/BSE.dir/src/db/sqlite.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/BSE.dir/src/db/sqlite.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/DaniilPC/POOSE/BSE/server/src/db/sqlite.cpp -o CMakeFiles/BSE.dir/src/db/sqlite.cpp.s
+
+CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o: CMakeFiles/BSE.dir/flags.make
+CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o: /home/DaniilPC/POOSE/BSE/server/src/marketplace/Marketplace.cpp
+CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o: CMakeFiles/BSE.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/DaniilPC/POOSE/BSE/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o -MF CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o.d -o CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o -c /home/DaniilPC/POOSE/BSE/server/src/marketplace/Marketplace.cpp
+
+CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/DaniilPC/POOSE/BSE/server/src/marketplace/Marketplace.cpp > CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.i
+
+CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/DaniilPC/POOSE/BSE/server/src/marketplace/Marketplace.cpp -o CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.s
+
+CMakeFiles/BSE.dir/src/user/User.cpp.o: CMakeFiles/BSE.dir/flags.make
+CMakeFiles/BSE.dir/src/user/User.cpp.o: /home/DaniilPC/POOSE/BSE/server/src/user/User.cpp
+CMakeFiles/BSE.dir/src/user/User.cpp.o: CMakeFiles/BSE.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/DaniilPC/POOSE/BSE/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/BSE.dir/src/user/User.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/BSE.dir/src/user/User.cpp.o -MF CMakeFiles/BSE.dir/src/user/User.cpp.o.d -o CMakeFiles/BSE.dir/src/user/User.cpp.o -c /home/DaniilPC/POOSE/BSE/server/src/user/User.cpp
+
+CMakeFiles/BSE.dir/src/user/User.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/BSE.dir/src/user/User.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/DaniilPC/POOSE/BSE/server/src/user/User.cpp > CMakeFiles/BSE.dir/src/user/User.cpp.i
+
+CMakeFiles/BSE.dir/src/user/User.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/BSE.dir/src/user/User.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/DaniilPC/POOSE/BSE/server/src/user/User.cpp -o CMakeFiles/BSE.dir/src/user/User.cpp.s
+
 # Object files for target BSE
 BSE_OBJECTS = \
-"CMakeFiles/BSE.dir/extra/python_bindings.cpp.o"
+"CMakeFiles/BSE.dir/extra/python_bindings.cpp.o" \
+"CMakeFiles/BSE.dir/src/asset/Asset.cpp.o" \
+"CMakeFiles/BSE.dir/src/db/sqlite.cpp.o" \
+"CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o" \
+"CMakeFiles/BSE.dir/src/user/User.cpp.o"
 
 # External object files for target BSE
 BSE_EXTERNAL_OBJECTS =
 
 BSE.cpython-312-x86_64-linux-gnu.so: CMakeFiles/BSE.dir/extra/python_bindings.cpp.o
+BSE.cpython-312-x86_64-linux-gnu.so: CMakeFiles/BSE.dir/src/asset/Asset.cpp.o
+BSE.cpython-312-x86_64-linux-gnu.so: CMakeFiles/BSE.dir/src/db/sqlite.cpp.o
+BSE.cpython-312-x86_64-linux-gnu.so: CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o
+BSE.cpython-312-x86_64-linux-gnu.so: CMakeFiles/BSE.dir/src/user/User.cpp.o
 BSE.cpython-312-x86_64-linux-gnu.so: CMakeFiles/BSE.dir/build.make
+BSE.cpython-312-x86_64-linux-gnu.so: /usr/lib64/libsqlite3.so
 BSE.cpython-312-x86_64-linux-gnu.so: CMakeFiles/BSE.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/DaniilPC/POOSE/BSE/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX shared module BSE.cpython-312-x86_64-linux-gnu.so"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/DaniilPC/POOSE/BSE/server/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX shared module BSE.cpython-312-x86_64-linux-gnu.so"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/BSE.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

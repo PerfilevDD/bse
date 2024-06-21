@@ -9,6 +9,10 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/DaniilPC/POOSE/BSE/server/extra/python_bindings.cpp" "CMakeFiles/BSE.dir/extra/python_bindings.cpp.o" "gcc" "CMakeFiles/BSE.dir/extra/python_bindings.cpp.o.d"
+  "/home/DaniilPC/POOSE/BSE/server/src/asset/Asset.cpp" "CMakeFiles/BSE.dir/src/asset/Asset.cpp.o" "gcc" "CMakeFiles/BSE.dir/src/asset/Asset.cpp.o.d"
+  "/home/DaniilPC/POOSE/BSE/server/src/db/sqlite.cpp" "CMakeFiles/BSE.dir/src/db/sqlite.cpp.o" "gcc" "CMakeFiles/BSE.dir/src/db/sqlite.cpp.o.d"
+  "/home/DaniilPC/POOSE/BSE/server/src/marketplace/Marketplace.cpp" "CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o" "gcc" "CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o.d"
+  "/home/DaniilPC/POOSE/BSE/server/src/user/User.cpp" "CMakeFiles/BSE.dir/src/user/User.cpp.o" "gcc" "CMakeFiles/BSE.dir/src/user/User.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

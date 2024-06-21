@@ -52,26 +52,31 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/home/DaniilPC/POOSE/BSE/server/build/_deps/pybind11-build/cmake_install.cmake")
 endif()
 
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("/home/DaniilPC/POOSE/BSE/server/build/_deps/sqlpp11-build/cmake_install.cmake")
+endif()
+
 if(CMAKE_INSTALL_COMPONENT STREQUAL "python" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so")
+  if(EXISTS "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSE.cpython-312-x86_64-linux-gnu.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSE.cpython-312-x86_64-linux-gnu.so")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so"
+         FILE "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSE.cpython-312-x86_64-linux-gnu.so"
          RPATH "")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so")
+   "/home/DaniilPC/POOSE/BSE/server/extra/BSE.cpython-312-x86_64-linux-gnu.so")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-  file(INSTALL DESTINATION "/home/DaniilPC/POOSE/BSE/server/extra" TYPE MODULE FILES "/home/DaniilPC/POOSE/BSE/server/build/BSM.cpython-312-x86_64-linux-gnu.so")
-  if(EXISTS "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so")
+  file(INSTALL DESTINATION "/home/DaniilPC/POOSE/BSE/server/extra" TYPE MODULE FILES "/home/DaniilPC/POOSE/BSE/server/build/BSE.cpython-312-x86_64-linux-gnu.so")
+  if(EXISTS "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSE.cpython-312-x86_64-linux-gnu.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSE.cpython-312-x86_64-linux-gnu.so")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so")
+      execute_process(COMMAND "/usr/bin/strip" "$ENV{DESTDIR}/home/DaniilPC/POOSE/BSE/server/extra/BSE.cpython-312-x86_64-linux-gnu.so")
     endif()
   endif()
 endif()

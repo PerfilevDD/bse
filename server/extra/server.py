@@ -9,6 +9,11 @@ from passlib.context import CryptContext
 from pydantic import BaseModel
 
 
+import argparse, uvicorn
+from starlette.responses import RedirectResponse
+
+
+
 
 from BSE import Asset, Marketplace, User  # type: ignore
 
@@ -161,3 +166,17 @@ async def read_own_items(
     current_user: Annotated[User, Depends(get_current_active_user)],
 ):
     return [{"item_id": "Foo", "owner": current_user.username}]
+
+
+@app.get("/", include_in_schema=False)
+async def redirect():
+    return RedirectResponse(url="/docs")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--port', type=int, default=8000, help="The port on which the api will be accessible.")
+    parser.add_argument('-ho', '--host', default="localhost", help="The host on which the api will be accessible.")
+    args = parser.parse_args()
+
+    uvicorn.run(app, host=args.host, port=args.port)

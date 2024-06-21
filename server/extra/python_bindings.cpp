@@ -1,4 +1,6 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include "db/sqlite.hpp"
 
 #include <asset/Asset.hpp>
 #include <marketplace/Marketplace.hpp>
@@ -9,6 +11,10 @@ using namespace BSE;
 
 PYBIND11_MODULE(BSE, m) {
     m.doc() = "BSE";
+    pybind11::class_<Database, std::shared_ptr<Database>>(m, "Database")
+        .def(pybind11::init<>())
+        .def("get_sqlpp11_db", &Database::get_sqlpp11_db);
+
     pybind11::class_<Asset>(m, "Asset")
         .def(pybind11::init<int>());
 
@@ -23,8 +29,8 @@ PYBIND11_MODULE(BSE, m) {
         .def("sell_asset_2", &Marketplace::sell_asset_2);
 
     pybind11::class_<User>(m, "User")
-        .def(pybind11::init<int>())
-        .def(pybind11::init<std::string&, std::string&>())
+        .def(pybind11::init<Database&, int>())
+        .def(pybind11::init<Database&, std::string&, std::string&>())
         .def("check_password", &User::check_password)
         .def("get_balance", &User::get_balance)
         .def("get_user_id", &User::get_user_id)
