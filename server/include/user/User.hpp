@@ -27,5 +27,6 @@ namespace BSE {
     private:
         int user_id;
         Database db;
+
     };
 }
