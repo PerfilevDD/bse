@@ -7,6 +7,11 @@ namespace BSM {
     public:
         Database();
         ~Database();
+
+        sqlite3* get_db_handle(){
+            return db;
+        }
+
     private:
         sqlite3 *db{};
     };
