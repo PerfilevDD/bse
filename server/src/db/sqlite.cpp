@@ -15,7 +15,7 @@ namespace BSE {
 
 
             config = std::make_shared<sql::connection_config>();
-            config->path_to_database = "bonn_stock_exchange.sql";
+            config->path_to_database = "bonn_stock_exchange.sqlite3";
             config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
 
             sqlpp_db = std::make_shared<sql::connection>(sql::connection(config));
