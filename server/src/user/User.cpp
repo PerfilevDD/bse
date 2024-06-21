@@ -1,6 +1,6 @@
 #include <user/User.hpp>
 
-namespace BSM {
+namespace BSE {
 
 User::User(Database database, int user_id) {
 }
@@ -18,4 +18,4 @@ int User::get_balance() {
 void User::update_balance(int change) {
     return;
 }
-}  // namespace BSM
+}  // namespace BSE

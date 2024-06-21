@@ -4,7 +4,7 @@
 #include "sqlite3.h"
 #include "db/sqlite.hpp"
 
-namespace BSM {
+namespace BSE {
     class User {
     public:
         User(Database database, int user_id);

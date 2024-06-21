@@ -3,7 +3,7 @@
 #include <sqlite3.h>
 #include <sqlpp11/sqlite3/connection.h>
 
-namespace BSM {
+namespace BSE {
     namespace sql = sqlpp::sqlite3;
 
     class Database {

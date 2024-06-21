@@ -1,6 +1,6 @@
 #pragma once
 
-namespace BSM {
+namespace BSE {
     class Asset {
     public:
         Asset(int asset_id);

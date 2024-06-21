@@ -128,13 +128,13 @@ ${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
 ${PROJECT_SOURCE_DIR}/src/user/*.cpp)
 
 
-pybind11_add_module(BSM
+pybind11_add_module(BSE
   extra/python_bindings.cpp
   ${SRC_FILES}
 )
 
 # Installiere Pythonmodul im Verzeichnis '---'
-install(TARGETS BSM
+install(TARGETS BSE
   COMPONENT python
   LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/extra)
 

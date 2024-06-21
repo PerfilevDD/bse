@@ -1,6 +1,6 @@
 #pragma once
 
-namespace BSM {
+namespace BSE {
     class Marketplace {
     public:
         Marketplace(int marketplace_id);

@@ -2,7 +2,7 @@
 #include "db/sqlite.hpp"
 
 TEST(SimpleTest, Database) {
-    BSM::Database db;
+    BSE::Database db;
 
 
 }
