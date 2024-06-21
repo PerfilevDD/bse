@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC -g -shared  -o BSE.cpython-312-x86_64-linux-gnu.so CMakeFiles/BSE.dir/extra/python_bindings.cpp.o 

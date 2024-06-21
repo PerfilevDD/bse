@@ -44,14 +44,14 @@ def open_login_window():
     entry_url.grid(row=2, column=1, padx=20, pady=5)
     entry_url.insert(0, 'http://localhost:8000')
 
-    button_register = Button(login_window, text="Auth", command=register_user)
+    button_register = Button(login_window, text="Auth", command=login)
     button_register.grid(row=3, column=1, pady=20)
 
     login_window.mainloop()
 
 
 
-def check_user(name, password):
+def server_auth_user(name, password):
     try:
         data = {'grant_type': "password", 'username': name, 'password': password}
         r = requests.post(f"{url}/token", data= data)
@@ -59,46 +59,34 @@ def check_user(name, password):
         print(r.json())
         return r.json()
     except requests.exceptions.RequestException as e:
-        print(e)
+        print(f"dd: {e}")
         return None    
 
 
 
-def register_user():  
+def login():  
     global url
     
     name = entry_name.get()
     password = entry_pasword.get()
+    
     if not name:        
-        messagebox.showwarning("", "Your name")
+        messagebox.showwarning("", "Name is required")
+        return
+    
+    if not password:        
+        messagebox.showwarning("", "Password is required")
         return
     
     url_label = entry_url.get()
-    
     url = url_label
     
     
-    user_data = check_user(name, password)
+    user_data = server_auth_user(name, password)
+    
+    messagebox.showinfo("test", f"test")
+    #login_window.destroy()
     print(user_data)
-    '''
-    if user_data:
-        # User exists
-        messagebox.showinfo("test", f"test, {name}, in the best Roulette in the world")
-        login_window.destroy()
-    else:
-        try:
-            r = requests.post(f"{url}/users/", json={'name': name})
-            r.raise_for_status()
-            print(r.json())
-            messagebox.showinfo("", f"Willkommen, {name}, in the best Roulette in the world")
-            
-            # Daten for local
-            balance = 100
-            user_id = r.json()['id']
-            
-            login_window.destroy()
-        except requests.exceptions.RequestException as e:
-            messagebox.showerror("", f"No Internet {e}")
-        '''
+        
             
 open_login_window()

@@ -6,9 +6,9 @@ namespace BSM {
     class User {
     public:
         User(int user_id);
-        User(std::string email, std::string password);
+        User(std::string& email, std::string& password);
 
-        bool check_password(std::string password);
+        bool check_password(std::string& password);
 
         int get_balance();
         int get_user_id() {

@@ -1,0 +1,1 @@
+/home/DaniilPC/POOSE/BSE/server/extra/BSM.cpython-312-x86_64-linux-gnu.so
