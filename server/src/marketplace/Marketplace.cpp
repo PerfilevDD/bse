@@ -1,6 +1,6 @@
 #include <marketplace/Marketplace.hpp>
 
-namespace BSM {
+namespace BSE {
 
 Marketplace::Marketplace(int marketplace_id){
 
@@ -30,4 +30,4 @@ int Marketplace::sell_asset_2(int amount) {
     return 0;
 }
 
-}  // namespace BSM
+}  // namespace BSE

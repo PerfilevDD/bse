@@ -10,7 +10,7 @@ from pydantic import BaseModel
 
 
 
-from BSM import Asset, Marketplace, User  # type: ignore
+from BSE import Asset, Marketplace, User  # type: ignore
 
 
 # to get a string like this run:

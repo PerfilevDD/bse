@@ -1,8 +1,8 @@
 #include <asset/Asset.hpp>
 
-namespace BSM {
+namespace BSE {
 
 Asset::Asset(int asset_id) {
 }
 
-}  // namespace BSM
+}  // namespace BSE

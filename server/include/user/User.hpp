@@ -1,12 +1,14 @@
 #pragma once
 
 #include "string"
+#include "sqlite3.h"
+#include "db/sqlite.hpp"
 
-namespace BSM {
+namespace BSE {
     class User {
     public:
-        User(int user_id);
-        User(std::string& email, std::string& password);
+        User(Database database, int user_id);
+        User(Database database, std::string& email, std::string& password);
 
         bool check_password(std::string& password);
 
@@ -16,7 +18,15 @@ namespace BSM {
         };
 
         void update_balance(int change);
+
+        inline static const std::string create_table = "CREATE TABLE IF NOT EXISTS USER("  \
+          "id INT PRIMARY KEY     NOT NULL," \
+          "email          CHAR(50)    NOT NULL," \
+          "password       CHAR(50)     NOT NULL," \
+          "balance        INT DEFAULT 0);";
     private:
         int user_id;
+        Database db;
+
     };
 }

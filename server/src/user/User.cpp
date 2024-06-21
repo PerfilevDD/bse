@@ -1,10 +1,21 @@
 #include <user/User.hpp>
 
-namespace BSM {
+#include <sstream>
+namespace BSE {
 
-User::User(int user_id) {
+    std::string hash(std::string password) {
+        size_t phash = std::hash<std::string>{}(password);
+        std::ostringstream oss;
+        oss << phash;
+        std::string password_hash = oss.str();
+
+    }
+
+User::User(Database database, int user_id) {
 }
-User::User(std::string& email, std::string& password) {
+User::User(Database database, std::string& email, std::string& password) {
+    std::string password_hash = hash(password);
+
 }
 
 bool User::check_password(std::string& password) {
@@ -18,4 +29,4 @@ int User::get_balance() {
 void User::update_balance(int change) {
     return;
 }
-}  // namespace BSM
+}  // namespace BSE

@@ -5,10 +5,10 @@
 #include <user/User.hpp>
 #include "string"
 
-using namespace BSM;
+using namespace BSE;
 
-PYBIND11_MODULE(BSM, m) {
-    m.doc() = "BSM";
+PYBIND11_MODULE(BSE, m) {
+    m.doc() = "BSE";
     pybind11::class_<Asset>(m, "Asset")
         .def(pybind11::init<int>());
 
