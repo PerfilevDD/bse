@@ -3,7 +3,6 @@
 namespace BSM {
 
 User::User(Database database, int user_id) {
-
 }
 User::User(Database database, std::string& email, std::string& password) {
 }

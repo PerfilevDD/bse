@@ -8,6 +8,8 @@
 #include "asset/Asset.hpp"
 
 
+
+
 static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
     int i;
     for(i = 0; i<argc; i++) {
@@ -35,6 +37,11 @@ namespace BSM {
             rc = sqlite3_exec(db, User::create_table.c_str(), callback, 0, &zErrMsg);
             rc = sqlite3_exec(db, Asset::create_table.c_str(), callback, 0, &zErrMsg);
             rc = sqlite3_exec(db, Marketplace::create_table.c_str(), callback, 0, &zErrMsg);
+
+
+            config = std::make_shared<sql::connection_config>();
+            config->path_to_database = "bonn_stock_exchange.sql";
+            config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
         }
 
         Database::~Database(){

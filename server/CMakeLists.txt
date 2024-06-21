@@ -74,6 +74,20 @@ FetchContent_Declare(
 # Include pybind11
 FetchContent_MakeAvailable(pybind11)
 
+#----------------------------------------------#
+#----------Download and use sqlpp1-----------#
+#----------------------------------------------#
+
+# Download pybind11
+FetchContent_Declare(
+        sqlpp11
+        GIT_REPOSITORY https://github.com/rbock/sqlpp11.git
+        GIT_TAG main
+)
+
+# Include sqlpp11
+set(BUILD_SQLITE3_CONNECTOR ON)
+FetchContent_MakeAvailable(sqlpp11)
 
 
 #----------------------------------------------#
@@ -131,9 +145,11 @@ install(TARGETS BSM
 
 file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
 add_executable(test_database tests/test_database.cpp ${SRC_FILES}
-        src/db/sqlite.cpp)
+        src/db/sqlite.cpp
+        src/user/User.cpp)
 target_link_libraries(test_database GTest::gtest_main)
 target_link_libraries(test_database sqlite3)
+target_link_libraries(test_database sqlpp11)
 gtest_discover_tests(test_database)
 
 #add_executable(main src/main.cpp)
