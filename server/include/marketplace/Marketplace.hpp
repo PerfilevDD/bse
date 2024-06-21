@@ -16,12 +16,12 @@ namespace BSM {
         int sell_asset_2(int amount);
 
 
-        inline static std::string create_table = "CREATE TABLE IF NOT EXISTS TRADE("  \
-          "ID INT PRIMARY KEY     NOT NULL," \
+        inline static std::string create_table = "CREATE TABLE IF NOT EXISTS MARKETPLACE("  \
+          "id INT PRIMARY KEY     NOT NULL," \
           "trade_pair          CHAR(50)    NOT NULL," \
           "price       INT     NOT NULL," \
-          "in        INT DEFAULT 0," \
-          "out        INT DEFAULT 0);";
+          "in_asset_amount        INT DEFAULT 0," \
+          "out_asset_amount        INT DEFAULT 0);";
 
     private:
         int supply_good_1 = 0;

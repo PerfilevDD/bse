@@ -4,4 +4,5 @@
 TEST(SimpleTest, Database) {
     BSM::Database db;
 
+
 }

@@ -20,7 +20,7 @@ namespace BSM {
         void update_balance(int change);
 
         inline static const std::string create_table = "CREATE TABLE IF NOT EXISTS USER("  \
-          "ID INT PRIMARY KEY     NOT NULL," \
+          "id INT PRIMARY KEY     NOT NULL," \
           "email          CHAR(50)    NOT NULL," \
           "password       CHAR(50)     NOT NULL," \
           "balance        INT DEFAULT 0);";

@@ -11,13 +11,14 @@ namespace BSM {
         Database();
         ~Database();
 
-        sqlite3* get_db_handle(){
-            return db;
+        std::shared_ptr<sql::connection> get_sqlpp11_db(){
+            return sqlpp_db;
         }
 
 
+
     private:
-        sqlite3 *db;
         std::shared_ptr<sql::connection_config> config;
+        std::shared_ptr<sql::connection> sqlpp_db;
     };
 }

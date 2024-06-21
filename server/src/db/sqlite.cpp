@@ -10,42 +10,21 @@
 
 
 
-static int callback(void *NotUsed, int argc, char **argv, char **azColName) {
-    int i;
-    for(i = 0; i<argc; i++) {
-        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-    }
-    printf("\n");
-    return 0;
-}
-
 namespace BSM {
         Database::Database(){
-            char *zErrMsg = 0;
-            int rc;
-
-            rc = sqlite3_open("bonn_stock_exchange.sql", &db);
-
-            if( rc ) {
-                fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-            } else {
-                fprintf(stderr, "Opened database successfully\n");
-            }
-
-
-
-            rc = sqlite3_exec(db, User::create_table.c_str(), callback, 0, &zErrMsg);
-            rc = sqlite3_exec(db, Asset::create_table.c_str(), callback, 0, &zErrMsg);
-            rc = sqlite3_exec(db, Marketplace::create_table.c_str(), callback, 0, &zErrMsg);
 
 
             config = std::make_shared<sql::connection_config>();
             config->path_to_database = "bonn_stock_exchange.sql";
             config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+
+            sqlpp_db = std::make_shared<sql::connection>(sql::connection(config));
+            sqlpp_db->execute(User::create_table);
+            sqlpp_db->execute(Marketplace::create_table);
+            sqlpp_db->execute(Asset::create_table);
         }
 
         Database::~Database(){
-            sqlite3_close(db);
         }
 
 }
