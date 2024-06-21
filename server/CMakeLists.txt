@@ -100,25 +100,27 @@ endif()
 # die in Verzeichnis src/ liegen.
 file(GLOB SRC_FILES
   ${PROJECT_SOURCE_DIR}/src/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/table/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/bet/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/user/*.cpp
         )
 
 
 # Baue das Programm '---' aus den Quellen
 file(GLOB SRC_FILES
 ${PROJECT_SOURCE_DIR}/src/*.cpp
-${PROJECT_SOURCE_DIR}/src/table/*.cpp
-${PROJECT_SOURCE_DIR}/src/bet/*.cpp)
+${PROJECT_SOURCE_DIR}/src/asset/*.cpp
+${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
+${PROJECT_SOURCE_DIR}/src/user/*.cpp)
 
 
-pybind11_add_module(fairoulette
+pybind11_add_module(BSM
   extra/python_bindings.cpp
   ${SRC_FILES}
 )
 
 # Installiere Pythonmodul im Verzeichnis '---'
-install(TARGETS fairoulette
+install(TARGETS BSM
   COMPONENT python
   LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/extra)
 

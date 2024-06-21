@@ -1,37 +1,32 @@
 #include <pybind11/pybind11.h>
 
-#include <bet/bet.hpp>
-#include <randomizer.hpp>
-#include <table/table.hpp>
+#include <asset/Asset.hpp>
+#include <marketplace/Marketplace.hpp>
+#include <user/User.hpp>
+#include "string"
 
-using namespace Fairoulette;
+using namespace BSM;
 
-PYBIND11_MODULE(fairoulette, m) {
-    m.doc() = "kk";
-    pybind11::class_<Randomizer>(m, "Randomizer")
-        .def(pybind11::init<>())
-        .def("get_random_number", &Randomizer::get_random_number);
+PYBIND11_MODULE(BSM, m) {
+    m.doc() = "BSM";
+    pybind11::class_<Asset>(m, "Asset")
+        .def(pybind11::init<int>());
 
-    pybind11::class_<Table>(m, "Table")
+    pybind11::class_<Marketplace>(m, "Marketplace")
         .def(pybind11::init<int>())
-        .def("calculate_result", &Table::calculate_result)
-        .def("get_table_id", &Table::get_table_id)
-        .def("add_or_update_bet_by_bet_id", &Table::add_or_update_bet_by_bet_id)
-        .def("get_and_clear_bets", &Table::get_and_clear_bets)
-        .def("get_bet_by_bet_id", &Table::get_bet_by_bet_id);
-
-    pybind11::class_<Bet>(m, "Bet")
         .def(pybind11::init<int, int>())
-        .def("calculate_result", &Bet::calculate_result)
-        .def("add_number_bet", &Bet::add_number_bet)
-        .def("add_red_bet", &Bet::add_red_bet)
-        .def("add_black_bet", &Bet::add_black_bet)
-        .def("add_even_bet", &Bet::add_even_bet)
-        .def("add_odd_bet", &Bet::add_odd_bet)
-        .def("add_col_bet", &Bet::add_col_bet)
-        .def("add_dozen_bet", &Bet::add_dozen_bet)
-        .def("get_number_bets", &Bet::get_number_bets)
-        .def("get_user_id", &Bet::get_user_id)
-        .def("get_bet_id", &Bet::get_bet_id)
-        .def("get_bet_worth", &Bet::get_bet_worth);
+        .def("price_asset_1", &Marketplace::price_asset_1)
+        .def("price_asset_2", &Marketplace::price_asset_2)
+        .def("estimate_sell_asset_1", &Marketplace::estimate_sell_asset_1)
+        .def("sell_asset_1", &Marketplace::sell_asset_1)
+        .def("estimate_sell_asset_2", &Marketplace::estimate_sell_asset_2)
+        .def("sell_asset_2", &Marketplace::sell_asset_2);
+
+    pybind11::class_<User>(m, "User")
+        .def(pybind11::init<int>())
+        .def(pybind11::init<std::string&, std::string&>())
+        .def("check_password", &User::check_password)
+        .def("get_balance", &User::get_balance)
+        .def("get_user_id", &User::get_user_id)
+        .def("update_balance", &User::update_balance);
 }
