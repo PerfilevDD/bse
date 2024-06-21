@@ -1,1 +1,1 @@
-/usr/bin/c++ -fPIC -g -shared  -o BSE.cpython-312-x86_64-linux-gnu.so CMakeFiles/BSE.dir/extra/python_bindings.cpp.o 
+/usr/bin/c++ -fPIC -g -shared  -o BSE.cpython-312-x86_64-linux-gnu.so CMakeFiles/BSE.dir/extra/python_bindings.cpp.o CMakeFiles/BSE.dir/src/asset/Asset.cpp.o CMakeFiles/BSE.dir/src/db/sqlite.cpp.o CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o CMakeFiles/BSE.dir/src/user/User.cpp.o  /usr/lib64/libsqlite3.so 

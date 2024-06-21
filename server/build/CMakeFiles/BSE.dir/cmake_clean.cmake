@@ -3,6 +3,14 @@ file(REMOVE_RECURSE
   "BSE.pdb"
   "CMakeFiles/BSE.dir/extra/python_bindings.cpp.o"
   "CMakeFiles/BSE.dir/extra/python_bindings.cpp.o.d"
+  "CMakeFiles/BSE.dir/src/asset/Asset.cpp.o"
+  "CMakeFiles/BSE.dir/src/asset/Asset.cpp.o.d"
+  "CMakeFiles/BSE.dir/src/db/sqlite.cpp.o"
+  "CMakeFiles/BSE.dir/src/db/sqlite.cpp.o.d"
+  "CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o"
+  "CMakeFiles/BSE.dir/src/marketplace/Marketplace.cpp.o.d"
+  "CMakeFiles/BSE.dir/src/user/User.cpp.o"
+  "CMakeFiles/BSE.dir/src/user/User.cpp.o.d"
 )
 
 # Per-language clean rules from dependency scanning.

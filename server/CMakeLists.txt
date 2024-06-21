@@ -5,7 +5,7 @@
 # Minimale Version des Buildsystems
 cmake_minimum_required(VERSION 3.16)
 # Name des Projekts
-project(Fairoulette)
+project(BSE)
 
 
 #----------------------------------------------#
@@ -115,6 +115,7 @@ endif()
 file(GLOB SRC_FILES
   ${PROJECT_SOURCE_DIR}/src/*.cpp
   ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/db/*.cpp
   ${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
   ${PROJECT_SOURCE_DIR}/src/user/*.cpp
         )
@@ -123,6 +124,7 @@ file(GLOB SRC_FILES
 # Baue das Programm '---' aus den Quellen
 file(GLOB SRC_FILES
 ${PROJECT_SOURCE_DIR}/src/*.cpp
+${PROJECT_SOURCE_DIR}/src/db/*.cpp
 ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
 ${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
 ${PROJECT_SOURCE_DIR}/src/user/*.cpp)
@@ -137,6 +139,12 @@ pybind11_add_module(BSE
 install(TARGETS BSE
   COMPONENT python
   LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/extra)
+
+
+
+target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11)
+
+target_link_libraries(BSE PRIVATE sqlpp11::sqlite3)
 
 
 #----------------------------------------------#

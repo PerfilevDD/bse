@@ -15,6 +15,7 @@ Realisiert:
 ## Setup for Server/Client
 Install Requirements:
 ```shell
+sudo dnf install sqlite-devel
 
 pip install -r requirements.txt
 ```
