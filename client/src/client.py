@@ -67,8 +67,10 @@ def server_auth_user(email, password):
         print(f"token: {token}")
         return r.json()
     except requests.exceptions.RequestException as e:
-        print(f"No Internet!\n {e}")
-        return None    
+        try:
+            return r.json()['detail']  
+        except:
+            return None  
 
 def login():  
     global url
@@ -90,12 +92,18 @@ def login():
     
     user_data = server_auth_user(email, password)
     
-    if user_data != None:
+    print(token)
+    if token != '':
         messagebox.showinfo("", f"Wellcome")
         #login_window.destroy()
-        print(user_data)
-    else:
+    elif user_data == "Incorrect email or password":
+        messagebox.showinfo("", f"{user_data}")
+    elif user_data == "user in nor register":
         messagebox.showinfo("", f"You need to register")
+    else:
+        messagebox.showinfo("", f"No Internet!")
+        
+        
         
 
 
@@ -130,7 +138,7 @@ def registrarion():
         else:
             messagebox.showinfo("", f"User alredy existes")
     except requests.exceptions.RequestException as e:
-        print(f"No Internet!\n {e}")
+        messagebox.showinfo("", f"No Internet!")
         return None  
     
     
