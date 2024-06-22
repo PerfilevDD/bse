@@ -13,7 +13,9 @@ PYBIND11_MODULE(BSE, m) {
     m.doc() = "BSE";
     pybind11::class_<Database, std::shared_ptr<Database>>(m, "Database")
         .def(pybind11::init<>())
-        .def("get_sqlpp11_db", &Database::get_sqlpp11_db);
+        .def("get_sqlpp11_db", &Database::get_sqlpp11_db)
+        .def("find_user_by_email", &Database::find_user_by_email);
+
 
     pybind11::class_<Asset>(m, "Asset")
         .def(pybind11::init<int>());
@@ -29,7 +31,7 @@ PYBIND11_MODULE(BSE, m) {
         .def("sell_asset_2", &Marketplace::sell_asset_2);
 
     pybind11::class_<User>(m, "User")
-        .def(pybind11::init<Database&, int>())
+        .def(pybind11::init<Database&, std::string&>())
         .def(pybind11::init<Database&, std::string&, std::string&>())
         .def("check_password", &User::check_password)
         .def("get_balance", &User::get_balance)

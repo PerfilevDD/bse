@@ -142,9 +142,8 @@ install(TARGETS BSE
 
 
 
-target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11)
+target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3)
 
-target_link_libraries(BSE PRIVATE sqlpp11::sqlite3)
 
 
 #----------------------------------------------#
@@ -158,7 +157,6 @@ add_executable(test_database tests/test_database.cpp ${SRC_FILES}
 target_link_libraries(test_database GTest::gtest_main)
 target_link_libraries(test_database sqlite3)
 target_link_libraries(test_database sqlpp11)
-gtest_discover_tests(test_database)
 
 #add_executable(main src/main.cpp)
 #target_link_libraries(main PUBLIC matplot)
