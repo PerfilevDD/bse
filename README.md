@@ -1,15 +1,15 @@
 # Bonn Stock Exchange
 
-##Währung:
-# FRC - FairCoin
-# POEUR - POOSE-Euro
+## Währung:
+- FRC - FairCoin
+- POEUR - POOSE-Euro
 
-# !! Wenn Database locked. 
-Use 
+## !! Wenn Database locked. 
+- Use 
 ```shell
 fuser path
 ```
-And kill this bitch
+- And kill this bitch
 ```shell
 kill -9 {parameters}
 ```
