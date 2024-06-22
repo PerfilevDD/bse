@@ -30,12 +30,9 @@ class TokenData(BaseModel):
     username: str | None = None
 
 class User(BaseModel):
-    email: str | None = None
-    full_name: str | None = None
-    disabled: bool | None = None
+    email: str 
+    password: str
 
-class UserInDB(User):
-    hashed_password: str
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -130,12 +127,12 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 # REGISTER --------------------
 
 @app.post("/register")
-async def register_user(email: str, password: str):
-    if not db.find_user_by_email(email):
-        create_user(email, password)
-        return {"reg complete"}
+async def register_user(user: User):
+    if not db.find_user_by_email(user.email):
+        create_user(user.email, user.password)
+        return {"status": "reg complete"}
     else:
-        return {"user is already reg"}
+        return {"status": "user is already reg"}
 
 def create_user(email: str, password: str):
     try:
