@@ -80,20 +80,6 @@ namespace BSE {
             using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
 
-        struct Pair_price {
-            struct _alias_t {
-                static constexpr const char _literal[] = "pair_price";
-                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-                template<typename T>
-                struct _member_t {
-                    T pair_price;
-                    T& operator()() { return pair_price; }
-                    const T& operator()() const { return pair_price; }
-                };
-            };
-            using _traits = sqlpp::make_traits<sqlpp::integer>;
-        };
-
 
 
         struct Item_amount {
@@ -109,23 +95,9 @@ namespace BSE {
             };
             using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
-
-        struct Pair_amount {
-            struct _alias_t {
-                static constexpr const char _literal[] = "pair_amount";
-                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-                template<typename T>
-                struct _member_t {
-                    T pair_amount;
-                    T& operator()() { return pair_amount; }
-                    const T& operator()() const { return pair_amount; }
-                };
-            };
-            using _traits = sqlpp::make_traits<sqlpp::integer>;
-        };
     }
     
-    struct MarketplaceTable : sqlpp::table_t<MarketplaceTable, MarketplaceTable_::Id, MarketplaceTable_::Trader_id, MarketplaceTable_::Item, MarketplaceTable_::Pair_item, MarketplaceTable_::Price, MarketplaceTable_::Pair_price, MarketplaceTable_::Item_amount, MarketplaceTable_::Pair_amount> {
+    struct MarketplaceTable : sqlpp::table_t<MarketplaceTable, MarketplaceTable_::Id, MarketplaceTable_::Trader_id, MarketplaceTable_::Item, MarketplaceTable_::Pair_item, MarketplaceTable_::Price, MarketplaceTable_::Item_amount> {
         struct _alias_t {
             static constexpr const char _literal[] = "MARKETPLACE";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;

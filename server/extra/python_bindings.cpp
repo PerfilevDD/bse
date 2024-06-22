@@ -14,7 +14,7 @@ using namespace BSE;
 PYBIND11_MODULE(BSE, m) {
     m.doc() = "BSE";
     pybind11::class_<Order>(m, "Order")
-        .def(pybind11::init<Database&, int, std::string&, std::string&, int, int, int, int>());
+        .def(pybind11::init<Database&, int, std::string&, std::string&, int, int>());
 
     pybind11::class_<Database, std::shared_ptr<Database>>(m, "Database")
         .def(pybind11::init<>())

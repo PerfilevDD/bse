@@ -14,16 +14,12 @@ Order::Order(Database& Database,
              std::string& item,
              std::string& pair_item,
              int price,
-             int pair_price,
-             int item_amount,
-             int pair_amount) : db(Database),
+             int item_amount) : db(Database),
                                 trader_id(trader_id),
                                 item(item),
                                 pair_item(pair_item),
                                 price(price),
-                                pair_price(pair_price),
-                                item_amount(item_amount),
-                                pair_amount(pair_amount) {
+                                item_amount(item_amount) {
     auto& sqlppDb = *db.get_sqlpp11_db();
 
     MarketplaceTable marketplaceTable;
@@ -34,9 +30,7 @@ Order::Order(Database& Database,
             marketplaceTable.item = item,
             marketplaceTable.pair_item = pair_item,
             marketplaceTable.price = price,
-            marketplaceTable.pair_price = pair_price,
-            marketplaceTable.item_amount = item_amount,
-            marketplaceTable.pair_amount = pair_amount));
+            marketplaceTable.item_amount = item_amount));
     } catch (const sqlpp::exception& e) {
         std::cerr << e.what() << std::endl;
     }

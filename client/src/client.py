@@ -7,9 +7,12 @@ import websockets
 import threading
 import json
 
+from ttkbootstrap import Style
+
 from PIL import Image, ImageTk
 url = "http://localhost:8000"
 token = ''
+user_id = 0;
 
 
 
@@ -145,7 +148,158 @@ def registrarion():
 
 
 # MAINWINDOW ------------------------------
-        
-        
+
+def buy_func(feet_price, feet_amount):
+    global url
+    
+    price = feet_price.get()
+    amount = feet_amount.get()
+    
+    try:
+        data = {'trader_id': user_id, 'item': 'frc','pair_item': 'poc', 'price': price, 'item_amount': amount}
+        r = requests.post(f"{url}/trade", json = data)
+        r.raise_for_status()
+        r.json()['status'] == 'trade reg complete'
             
-open_login_window()
+        messagebox.showinfo("", f"comlete")
+        return r.json()
+    
+    except requests.exceptions.RequestException as e:
+        messagebox.showinfo("", f"No Internet!")
+        return None  
+    
+    
+def sell_func(feet_price, feet_amount):
+    global url
+    
+    price = feet_price.get()
+    amount = feet_amount.get()
+    
+    try:
+        data = {'trader_id': user_id, 'item': 'poc','pair_item': 'frc', 'price': price, 'item_amount': amount}
+        r = requests.post(f"{url}/trade", json = data)
+        r.raise_for_status()
+        r.json()['status'] == 'trade reg complete'
+            
+        messagebox.showinfo("", f"comlete")
+        return r.json()
+    
+    except requests.exceptions.RequestException as e:
+        messagebox.showinfo("", f"No Internet!")
+        return None  
+    
+
+    
+def open_game_window():
+    global root, entry_price, entry_amount
+    
+    # Main window
+    root = Tk()
+    root.title("Bonn Stock Exchange")
+    
+    # Style settings
+    style = Style('darkly')
+
+
+    # Window settings
+    mainframe = ttk.Frame(root, padding="70 70 70 70")
+    mainframe.grid(column=0, row=0)
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+
+    # BUY_______________________________
+    
+    Buy = ttk.Frame(mainframe)
+    Buy.grid(row = 0, column = 1)
+    Buy.grid_columnconfigure((0,1), weight = 1)
+    Buy.grid_rowconfigure(0, weight = 1)
+    
+    # Scrollbox
+    
+    listbox = Listbox(mainframe) 
+    listbox.grid(row = 0, column = 0)
+    
+    
+        
+    
+    # Labels 
+    
+    price_label = ttk.Label(Buy, text=f"Price")
+    price_label.config(font=("Courier", 16))
+    price_label.grid(column=0, row=0)
+    
+    feet_price = StringVar()
+    entry_price = ttk.Entry(Buy, textvariable=feet_price)
+    entry_price.grid(row=0, column=1, padx=20, pady=5)
+    
+    
+
+
+    amount_label = ttk.Label(Buy, text=f"Amount")
+    amount_label.grid(column=0, row=1)
+    amount_label.config(font=("Courier", 16))
+    
+    feet_amount = StringVar()
+    entry_amount = ttk.Entry(Buy, textvariable=feet_amount)
+    entry_amount.grid(row=1, column=1, padx=20, pady=5)
+    
+    
+    Button(Buy, text=f"Buy", command=lambda i=0: buy_func(feet_price, feet_amount),width=18, height=2,bg="red", fg="white").grid(column=1, row=2)
+    
+    
+    # SELL__________________________
+    
+    Sell = ttk.Frame(mainframe)
+    Sell.grid(row = 0, column = 2)
+    Sell.grid_columnconfigure((0,1), weight = 1)
+    Sell.grid_rowconfigure(0, weight = 1)
+    
+    # Scrollbox
+    
+    listbox = Listbox(mainframe) 
+    listbox.grid(row = 0, column = 3)
+    
+    
+    
+    
+    # Labels 
+    
+    price_label = ttk.Label(Sell, text=f"Price")
+    price_label.config(font=("Courier", 16))
+    price_label.grid(column=1, row=0)
+    
+    feet_price_sell = StringVar()
+    entry_price = ttk.Entry(Sell, textvariable=feet_price_sell)
+    entry_price.grid(row=0, column=2, padx=20, pady=5)
+    
+    
+
+
+    amount_label = ttk.Label(Sell, text=f"Amount")
+    amount_label.grid(column=1, row=1)
+    amount_label.config(font=("Courier", 16))
+    
+    feet_amount_sell = StringVar()
+    entry_amount = ttk.Entry(Sell, textvariable=feet_amount_sell)
+    entry_amount.grid(row=1, column=2, padx=20, pady=5)
+    
+    
+    Button(Sell, text=f"Sell", command=lambda i=0: sell_func(feet_price_sell, feet_amount_sell), width=18, height=2,bg="green", fg="white").grid(column=2, row=2)
+    
+    
+    
+     
+    
+
+    
+    
+
+
+    entry_price.focus()
+
+    root.mainloop()
+    
+          
+open_game_window()
+            
+#open_login_window()

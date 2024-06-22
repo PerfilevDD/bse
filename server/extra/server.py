@@ -38,9 +38,7 @@ class Order(BaseModel):
     item: str
     pair_item: str
     price: int
-    pair_price: int
     item_amount: int
-    pair_amount: int
     
 
 
@@ -180,12 +178,12 @@ async def read_own_items(
 # TRADES --------------------------
 @app.post("/trade")
 async def new_trade(order: Order):
-    create_order(order.trader_id, order.item, order.pair_item, order.price, order.pair_price, order.item_amount, order.pair_amount)
+    create_order(order.trader_id, order.item, order.pair_item, order.price, order.item_amount)
     return {"status": "trade reg complete"}
 
-def create_order(trader_id: int, item: str, pair_item: str, price: int, pair_price: int, item_amount: int, pair_amount: int):
+def create_order(trader_id: int, item: str, pair_item: str, price: int, item_amount: int):
     try:
-        BSEOrder(db, trader_id, item, pair_item, price, pair_price, item_amount, pair_amount)
+        BSEOrder(db, trader_id, item, pair_item, price, item_amount)
     except Exception as e:
         print(f"{e}")
     
