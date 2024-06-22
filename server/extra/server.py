@@ -1,8 +1,11 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
 
+from contextlib import asynccontextmanager
+
+
 import jwt
-from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi import Depends, FastAPI, HTTPException, status, WebSocket
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from jwt.exceptions import InvalidTokenError
 from passlib.context import CryptContext
@@ -10,10 +13,17 @@ from pydantic import BaseModel
 
 import argparse, uvicorn
 from starlette.responses import RedirectResponse
+import json
+import asyncio
+
+
 
 from BSE import Asset, Marketplace, User as BSEUser, Database, Order as BSEOrder
 
 db = Database()
+
+clients = []
+
 
 print(db)
 print(db.find_user_by_email("s"))
@@ -45,9 +55,31 @@ class Order(BaseModel):
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    asyncio.create_task(get_orders())
+    yield
+    
+    
 app = FastAPI(
-    title="Bonn Stock Exchange"
+    title="Bonn Stock Exchange",
+    lifespan=lifespan
+
 )
+
+
+# Websocket to send a data on client 
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    clients.append(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except Exception as e:
+        clients.remove(websocket)
+
+
 
 
 def get_user(email: str):
@@ -186,7 +218,21 @@ def create_order(trader_id: int, item: str, pair_item: str, price: int, item_amo
         BSEOrder(db, trader_id, item, pair_item, price, item_amount)
     except Exception as e:
         print(f"{e}")
-    
+
+async def get_orders():
+    while True:
+        await asyncio.sleep(5)
+        orders = db.get_all_orders()
+        action = "add"
+        for order in orders:
+            # Websocket
+            for client in clients:
+                data = {"action": action, "trader_id": order.trader_id, "item": order.item, "pair_item": order.pair_item, 'price': order.price, 'item_amount': order.item_amount}
+                try:
+                    await client.send_text(json.dumps(data))
+                except Exception as e:
+                    clients.remove(client)
+
 
 
 # CONFIG -------------------------
@@ -195,6 +241,8 @@ async def redirect():
     return RedirectResponse(url="/docs")
 
 if __name__ == "__main__":
+    
+    
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', type=int, default=8000, help="The port on which the api will be accessible.")
     parser.add_argument('-ho', '--host', default="localhost", help="The host on which the api will be accessible.")

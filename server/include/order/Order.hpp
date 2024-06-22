@@ -7,6 +7,8 @@
 namespace BSE {
 class Order {
    public:
+    Order(int id);
+
     Order(Database& Database,
           int trader_id,
           std::string& item,
