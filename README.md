@@ -1,6 +1,6 @@
 # Bonn Stock Exchange
 
-Währung:
+##Währung:
 # FRC - FairCoin
 # POEUR - POOSE-Euro
 
@@ -13,6 +13,15 @@ And kill this bitch
 ```shell
 kill -9 {parameters}
 ```
+
+## Realisiert:
+- Databank
+- Client
+- Server
+## TODO:
+- Balance update
+- buy/sell func
+- ???
 
 ## Contributors
 
@@ -34,10 +43,7 @@ pip install -r requirements.txt
 ```
 
 ```shell
-cd server &&
-cmake -S . -B build/ &&
-cmake --build build/ &&
-cmake --install build
+sudo ./build.sh
 ```
 
 ### Run Server

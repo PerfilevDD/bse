@@ -33,16 +33,16 @@ bool Database::find_user_by_email(std::string& email) {
     }
 }*/
 
-bool Database::find_user_by_email(std::string& email) {
+// USER
+
+int Database::find_user_by_email(std::string& email) {
     auto& sqlppDb = *sqlpp_db;
 
     UserTable userTable;
 
     try {
-        for (const auto& row : sqlppDb(sqlpp::select(userTable.email).from(userTable).where(userTable.email == email))) {
-            if (row.email == email) {
-                return 1;
-            }
+        for (const auto& row : sqlppDb(sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email))) {
+            return row.id;
         }
         return 0;
     } catch (const sqlpp::exception& e) {
@@ -50,6 +50,60 @@ bool Database::find_user_by_email(std::string& email) {
     }
 }
 
+// BALANCE USER
+int Database::get_user_balance_frc(std::string& email) {
+    auto& sqlppDb = *sqlpp_db;
+
+    UserTable userTable;
+
+    try {
+        for (const auto& row : sqlppDb(sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email))) {
+            return row.balanceFRC;
+        }
+    } catch (const sqlpp::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+int Database::get_user_balance_poeur(std::string& email) {
+    auto& sqlppDb = *sqlpp_db;
+
+    UserTable userTable;
+
+    try {
+        for (const auto& row : sqlppDb(sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email))) {
+            return row.balancePOEUR;
+        }
+    } catch (const sqlpp::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void Database::update_user_balance_poeur(std::string& email, int amount) {
+    auto& sqlppDb = *sqlpp_db;
+
+    UserTable userTable;
+
+    try {
+        sqlppDb(sqlpp::update(userTable).set(userTable.balancePOEUR += amount).where(userTable.email == email));
+    } catch (const sqlpp::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+void Database::update_user_balance_frc(std::string& email, int amount) {
+    auto& sqlppDb = *sqlpp_db;
+
+    UserTable userTable;
+
+    try {
+        sqlppDb(sqlpp::update(userTable).set(userTable.balanceFRC += amount).where(userTable.email == email));
+    } catch (const sqlpp::exception& e) {
+        std::cerr << e.what() << std::endl;
+    }
+}
+
+// ORDERS
 OrderDB Database::give_order_by_id(int id) {
     auto& sqlppDb = *sqlpp_db;
 

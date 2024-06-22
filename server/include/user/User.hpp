@@ -26,7 +26,8 @@ class User {
         "id INTEGER PRIMARY KEY AUTOINCREMENT,"
         "email TEXT NOT NULL,"
         "password TEXT NOT NULL,"
-        "balance INTEGER DEFAULT 100);";
+        "balanceFRC INTEGER DEFAULT 10,"
+        "balancePOEUR INTEGER DEFAULT 101);";
 
    private:
     int user_id;

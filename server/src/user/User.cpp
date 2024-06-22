@@ -37,7 +37,8 @@ User::User(Database& database, std::string& email, std::string& password)
         sqlppDb(sqlpp::insert_into(userTable).set(
             userTable.email = email,
             userTable.password = password_hash,
-            userTable.balance = 100));
+            userTable.balanceFRC = 10,
+            userTable.balancePOEUR = 101));
     } catch (const sqlpp::exception& e) {
         std::cerr << e.what() << std::endl;
     }

@@ -4,6 +4,9 @@
 namespace BSE {
     namespace MarketplaceTable_ {
 
+// https://github.com/rbock/sqlpp11/blob/main/tests/sqlite3/usage/Sample.cpp 
+// Dont delete, sonst ich lösch alles
+
         struct Id {
             struct _alias_t {
                 static constexpr const char _literal[] = "id";
