@@ -15,6 +15,7 @@ namespace BSE {
             return sqlpp_db;
         }
 
+        bool find_user_by_email(std::string& email);
 
 
     private:

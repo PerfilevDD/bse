@@ -7,8 +7,8 @@
 namespace BSE {
 class User {
    public:
-    User(Database database, int user_id);
-    User(Database database, std::string& email, std::string& password);
+    User(Database& database, std::string& email);
+    User(Database& database, std::string& email, std::string& password);
 
     bool check_password(std::string& password);
 
@@ -23,13 +23,15 @@ class User {
 
     inline static const std::string create_table =
         "CREATE TABLE IF NOT EXISTS USER("
-        "id INT PRIMARY KEY     NOT NULL,"
-        "email          CHAR(50)    NOT NULL,"
-        "password       CHAR(50)     NOT NULL,"
-        "balance        INT DEFAULT 0);";
+        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "email TEXT NOT NULL,"
+        "password TEXT NOT NULL,"
+        "balance INTEGER DEFAULT 100);";
 
    private:
     int user_id;
-    Database db;
+    Database& db;
+    std::string email;
+    std::string password_hash;
 };
 }  // namespace BSE
