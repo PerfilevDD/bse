@@ -1,21 +1,25 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "db/sqlite.hpp"
 
 #include <asset/Asset.hpp>
 #include <marketplace/Marketplace.hpp>
+#include <order/Order.hpp>
 #include <user/User.hpp>
+
+#include "db/sqlite.hpp"
 #include "string"
 
 using namespace BSE;
 
 PYBIND11_MODULE(BSE, m) {
     m.doc() = "BSE";
+    pybind11::class_<Order>(m, "Order")
+        .def(pybind11::init<Database&, int, std::string&, std::string&, int, int, int, int>());
+
     pybind11::class_<Database, std::shared_ptr<Database>>(m, "Database")
         .def(pybind11::init<>())
         .def("get_sqlpp11_db", &Database::get_sqlpp11_db)
         .def("find_user_by_email", &Database::find_user_by_email);
-
 
     pybind11::class_<Asset>(m, "Asset")
         .def(pybind11::init<int>());

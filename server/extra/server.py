@@ -11,7 +11,7 @@ from pydantic import BaseModel
 import argparse, uvicorn
 from starlette.responses import RedirectResponse
 
-from BSE import Asset, Marketplace, User as BSEUser, Database
+from BSE import Asset, Marketplace, User as BSEUser, Database, Order as BSEOrder
 
 db = Database()
 
@@ -32,6 +32,16 @@ class TokenData(BaseModel):
 class User(BaseModel):
     email: str 
     password: str
+    
+class Order(BaseModel):
+    trader_id: int
+    item: str
+    pair_item: str
+    price: int
+    pair_price: int
+    item_amount: int
+    pair_amount: int
+    
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -83,14 +93,21 @@ async def get_current_active_user(
 
 @app.post("/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    is_userDB = authenticate_user(form_data.username, form_data.password)
+    is_userDB, error = authenticate_user(form_data.username, form_data.password)
     
-    if not is_userDB:
+    if not is_userDB and error != 'not reg':
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    elif not is_userDB and error == 'not reg':
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="user in nor register",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": form_data.username}, expires_delta=access_token_expires
@@ -100,11 +117,14 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
 
 def authenticate_user(email: str, password: str):
     is_userDB = db.find_user_by_email(email)
+    error = ''
     if not is_userDB:
-        return False
+        error = 'not reg'
+        return False, error
     if not verify_password(email, password):
-        return False
-    return is_userDB
+        error = 'false pass'
+        return False, error
+    return is_userDB, error
 
 def verify_password(email, password):
     user = BSEUser(db, email)
@@ -155,6 +175,20 @@ async def read_own_items(
 ):
     return [{"item_id": "Foo", "owner": current_user.username}]
 
+
+
+# TRADES --------------------------
+@app.post("/trade")
+async def new_trade(order: Order):
+    create_order(order.trader_id, order.item, order.pair_item, order.price, order.pair_price, order.item_amount, order.pair_amount)
+    return {"status": "trade reg complete"}
+
+def create_order(trader_id: int, item: str, pair_item: str, price: int, pair_price: int, item_amount: int, pair_amount: int):
+    try:
+        BSEOrder(db, trader_id, item, pair_item, price, pair_price, item_amount, pair_amount)
+    except Exception as e:
+        print(f"{e}")
+    
 
 
 # CONFIG -------------------------
