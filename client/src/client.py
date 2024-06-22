@@ -42,7 +42,7 @@ def open_login_window():
     label_password = Label(login_window, text="Pass:")
     label_password.grid(row=1, column=0, padx=20, pady=5)
     
-    entry_pasword = Entry(login_window)
+    entry_pasword = Entry(login_window, show="*")
     entry_pasword.grid(row=1, column=1, padx=20, pady=5)
     
     
