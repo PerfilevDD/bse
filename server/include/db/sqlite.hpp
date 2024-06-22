@@ -26,7 +26,11 @@ class Database {
         return sqlpp_db;
     }
 
-    bool find_user_by_email(std::string& email);
+    int find_user_by_email(std::string& email);
+    int get_user_balance_frc(std::string& email);
+    int get_user_balance_poeur(std::string& email);
+    void update_user_balance_poeur(std::string& email, int amount);
+    void update_user_balance_frc(std::string& email, int amount);
 
     struct OrderDB give_order_by_id(int id);
 

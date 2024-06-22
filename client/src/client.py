@@ -6,6 +6,7 @@ import asyncio
 import websockets
 import threading
 import json
+import jwt
 
 from ttkbootstrap import Style
 
@@ -13,6 +14,10 @@ from PIL import Image, ImageTk
 url = "http://localhost:8000"
 token = ''
 user_id = 0;
+balancePOEUR = 0;
+balanceFRC = 0;
+
+SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
 current_orders = set()
 
@@ -78,7 +83,7 @@ def server_auth_user(email, password):
             return None  
 
 def login():  
-    global url
+    global url, user_id
     
     email = entry_name.get()
     password = entry_pasword.get()
@@ -101,6 +106,11 @@ def login():
     if token != '':
         # Wellcome func HERE
         messagebox.showinfo("", f"Wellcome")
+        
+        user_id=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["user_id"]
+        user_email=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["sub"]
+        get_user_balance(user_email)
+        
         login_window.destroy()
         open_game_window()
     elif user_data == "Incorrect email or password":
@@ -112,12 +122,23 @@ def login():
         
         
         
+# Balance
+def get_user_balance(email: str):
+    global balanceFRC, balancePOEUR
+    try:
+        r = requests.get(f"{url}/balance{email}")
+        r.raise_for_status()
+        balanceFRC = r.json()['frc']   
+        balancePOEUR = r.json()['poeur']     
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("", f"No Internet") 
+            
 
 
 # Registrarion
 
 def registrarion():
-    global url
+    global url, user_id
     
     email = entry_name.get()
     password = entry_pasword.get()
@@ -142,6 +163,11 @@ def registrarion():
             
             # Wellcome func HERE
             messagebox.showinfo("", f"Wellcome")
+        
+            user_id=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["user_id"]
+            user_email=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["sub"]
+            get_user_balance(user_email)
+        
             login_window.destroy()
             open_game_window()
             
@@ -175,16 +201,21 @@ async def listen_for_updates():
                 ws_price = data["price"]
                 ws_item_amount = data["item_amount"]
                 
+                # calculate space between two parms
+                # 21 is length of listbox
+                len_ws_price = len(str(ws_price))
+                len_ws_item_amount = len(str(ws_item_amount))
+                len_spaces = 22 - len_ws_price - len_ws_item_amount
                 
-                listbox_entry = f"Price: {ws_price}, Item Amount: {ws_item_amount}"
+                listbox_entry = f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}"
                 order_str = f"Item: {ws_item}, Pair Item: {ws_pair_item}, Price: {ws_price}, Item Amount: {ws_item_amount}"
 
                 if action == "add":
                     if order_str not in current_orders:
                         if ws_item == 'FRC':
-                            listbox_buy.insert(0, f"Price: {ws_price}, Item Amount: {ws_item_amount}")
+                            listbox_buy.insert(0, f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}")
                         elif ws_item == "POEUR":
-                            listbox_sell.insert(0, f"Price: {ws_price}, Item Amount: {ws_item_amount}")
+                            listbox_sell.insert(0, f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}")
                             
                         current_orders.add(order_str)
                         
@@ -276,20 +307,34 @@ def open_game_window():
     mainframe.grid(column=0, row=0)
     root.columnconfigure(0, weight=1)
     root.rowconfigure(0, weight=1)
+    
+    
+    # Balance
+    
+    balanceFRC_label = ttk.Label(mainframe, text=f" "*36 + f"POEUR: {balancePOEUR}   |   FRC: {balanceFRC}")
+    balanceFRC_label.config(font=("Courier", 13))
+    balanceFRC_label.grid(column=1, row=0)
+    
 
     # BUY_______________________________
     
     Buy = ttk.Frame(mainframe)
-    Buy.grid(row = 0, column = 1)
+    Buy.grid(row = 1, column = 1)
     Buy.grid_columnconfigure((0,1), weight = 1)
     Buy.grid_rowconfigure(0, weight = 1)
     
     # Scrollbox
     
-    listbox_buy = Listbox(mainframe) 
-    listbox_buy.grid(row = 0, column = 0)
+    legend_label = ttk.Label(mainframe, text=f"Price(POEUR)    Amount(FRC)")
+    legend_label.config(font=("Courier", 12))
+    legend_label.grid(column=0, row=0)
     
-    listbox_buy.insert(0, f"Price: {2}, Item Amount: {23}")
+    listbox_buy = Listbox(mainframe) 
+    listbox_buy.config(font=("Courier", 14), width=22)
+    listbox_buy.grid(row = 1, column = 0)
+    
+    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_buy, 'buy'), width=32, height=2, bg="blue", fg="white").grid(column=0, row=2)
+    
         
     
     # Labels 
@@ -300,6 +345,7 @@ def open_game_window():
     
     feet_price = StringVar()
     entry_price = ttk.Entry(Buy, textvariable=feet_price)
+    entry_price.config(font=("Courier", 14))
     entry_price.grid(row=0, column=1, padx=20, pady=5)
     
     
@@ -311,24 +357,30 @@ def open_game_window():
     
     feet_amount = StringVar()
     entry_amount = ttk.Entry(Buy, textvariable=feet_amount)
+    entry_amount.config(font=("Courier", 14))
     entry_amount.grid(row=1, column=1, padx=20, pady=5)
     
     
-    Button(Buy, text=f"Buy", command=lambda i=0: buy_func(feet_price, feet_amount),width=18, height=2,bg="red", fg="white").grid(column=1, row=2)
+    Button(Buy, text=f"Sell FRC", command=lambda i=0: buy_func(feet_price, feet_amount),width=18, height=2,bg="red", fg="white").grid(column=1, row=2)
     
     
     # SELL__________________________
     
     Sell = ttk.Frame(mainframe)
-    Sell.grid(row = 0, column = 2)
+    Sell.grid(row = 1, column = 2)
     Sell.grid_columnconfigure((0,1), weight = 1)
     Sell.grid_rowconfigure(0, weight = 1)
     
     # Scrollbox
+    legend_label = ttk.Label(mainframe, text=f"Price(FRC)    Amount(POEUR)")
+    legend_label.config(font=("Courier", 12))
+    legend_label.grid(column=3, row=0)
     
     listbox_sell = Listbox(mainframe) 
-    listbox_sell.grid(row = 0, column = 3)
+    listbox_sell.config(font=("Courier", 14), width=22)
+    listbox_sell.grid(row = 1, column = 3)
     
+    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_buy, 'buy'), width=32, height=2, bg="blue", fg="white").grid(column=3, row=2)
     
     
     
@@ -340,6 +392,7 @@ def open_game_window():
     
     feet_price_sell = StringVar()
     entry_price = ttk.Entry(Sell, textvariable=feet_price_sell)
+    entry_price.config(font=("Courier", 14))
     entry_price.grid(row=0, column=2, padx=20, pady=5)
     
     
@@ -351,10 +404,11 @@ def open_game_window():
     
     feet_amount_sell = StringVar()
     entry_amount = ttk.Entry(Sell, textvariable=feet_amount_sell)
+    entry_amount.config(font=("Courier", 14))
     entry_amount.grid(row=1, column=2, padx=20, pady=5)
     
     
-    Button(Sell, text=f"Sell", command=lambda i=0: sell_func(feet_price_sell, feet_amount_sell), width=18, height=2,bg="green", fg="white").grid(column=2, row=2)
+    Button(Sell, text=f"Sell POEUR", command=lambda i=0: sell_func(feet_price_sell, feet_amount_sell), width=18, height=2,bg="green", fg="white").grid(column=2, row=2)
     
     
     

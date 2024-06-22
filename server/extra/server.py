@@ -25,9 +25,6 @@ db = Database()
 clients = []
 
 
-print(db)
-print(db.find_user_by_email("s"))
-
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
@@ -81,57 +78,19 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 
-
-def get_user(email: str):
-    try:
-        user = BSEUser(db, 1)
-        return UserInDB(hashed_password=user.hash(password))
-    except Exception as e:
-        return None
-
-
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = TokenData(username=username)
-    except InvalidTokenError:
-        raise credentials_exception
-    user = get_user(token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
-
-async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)],
-):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
-
-
-
 # LOGIN --------------------
 
 @app.post("/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    is_userDB, error = authenticate_user(form_data.username, form_data.password)
+    user_id, error = authenticate_user(form_data.username, form_data.password)
     
-    if not is_userDB and error != 'not reg':
+    if not user_id and error != 'not reg':
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    elif not is_userDB and error == 'not reg':
+    elif not user_id and error == 'not reg':
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="user in nor register",
@@ -140,7 +99,7 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
         
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": form_data.username}, expires_delta=access_token_expires
+        data={"sub": form_data.username, "user_id": user_id}, expires_delta=access_token_expires
     )
     return Token(access_token=access_token, token_type="bearer")
 
@@ -171,6 +130,14 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+# BALANCE ---------------------
+
+@app.get("/balance{email}")
+async def get_balance(email):
+    user_balanceFRC = db.get_user_balance_frc(email)
+    user_balancePOEUR = db.get_user_balance_poeur(email)
+    return {"frc": user_balanceFRC, "poeur": user_balancePOEUR}
+
 
 
 
@@ -192,21 +159,6 @@ def create_user(email: str, password: str):
 
 
 
-
-@app.get("/users/me/", response_model=User)
-async def read_users_me(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-):
-    return current_user
-
-@app.get("/users/me/items/")
-async def read_own_items(
-    current_user: Annotated[User, Depends(get_current_active_user)],
-):
-    return [{"item_id": "Foo", "owner": current_user.username}]
-
-
-
 # TRADES --------------------------
 @app.post("/trade")
 async def new_trade(order: Order):
@@ -221,7 +173,7 @@ def create_order(trader_id: int, item: str, pair_item: str, price: int, item_amo
 
 async def get_orders():
     while True:
-        await asyncio.sleep(5)
+        await asyncio.sleep(3)
         orders = db.get_all_orders()
         action = "add"
         for order in orders:
@@ -231,8 +183,7 @@ async def get_orders():
                 try:
                     await client.send_text(json.dumps(data))
                 except Exception as e:
-                    clients.remove(client)
-
+                    clients.remove(client)            
 
 
 # CONFIG -------------------------

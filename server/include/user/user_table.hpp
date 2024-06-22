@@ -46,22 +46,36 @@ namespace BSE {
             using _traits = sqlpp::make_traits<sqlpp::varchar>;
         };
 
-        struct Balance {
+        struct BalancePOEUR {
             struct _alias_t {
-                static constexpr const char _literal[] = "balance";
+                static constexpr const char _literal[] = "balancePOEUR";
                 using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
                 template<typename T>
                 struct _member_t {
-                    T balance;
-                    T& operator()() { return balance; }
-                    const T& operator()() const { return balance; }
+                    T balancePOEUR;
+                    T& operator()() { return balancePOEUR; }
+                    const T& operator()() const { return balancePOEUR; }
+                };
+            };
+            using _traits = sqlpp::make_traits<sqlpp::integer>;
+        };
+
+        struct BalanceFRC {
+            struct _alias_t {
+                static constexpr const char _literal[] = "balanceFRC";
+                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+                template<typename T>
+                struct _member_t {
+                    T balanceFRC;
+                    T& operator()() { return balanceFRC; }
+                    const T& operator()() const { return balanceFRC; }
                 };
             };
             using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
     }
     
-    struct UserTable : sqlpp::table_t<UserTable, UserTable_::Id, UserTable_::Email, UserTable_::Password, UserTable_::Balance> {
+    struct UserTable : sqlpp::table_t<UserTable, UserTable_::Id, UserTable_::Email, UserTable_::Password, UserTable_::BalancePOEUR, UserTable_::BalanceFRC> {
         struct _alias_t {
             static constexpr const char _literal[] = "USER";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
