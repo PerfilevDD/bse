@@ -1,6 +1,18 @@
 # Bonn Stock Exchange
 
-Realisiert:
+Währung:
+# FRC - FairCoin
+# POEUR - POOSE-Euro
+
+# !! Wenn Database locked. 
+Use 
+```shell
+fuser path
+```
+And kill this bitch
+```shell
+kill -9 {parameters}
+```
 
 ## Contributors
 
@@ -11,6 +23,7 @@ Realisiert:
 ## Credits
 - Sir Tim Berners-Lee: Thanks for the Internet
 - Felix Boes: Dessen Vorlesungen die Grundlage für dieses Projekt bilden.
+- Typ, der die DataBank in C++ implementiert hat
 
 ## Setup for Server/Client
 Install Requirements:

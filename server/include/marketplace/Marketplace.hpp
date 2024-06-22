@@ -23,9 +23,7 @@ class Marketplace {
         "item TEXT NOT NULL,"
         "pair_item TEXT NOT NULL,"
         "price INTEGER NOT NULL,"
-        "pair_price INTEGER NOT NULL,"
-        "item_amount INTEGER NOT NULL,"
-        "pair_amount INTEGER NOT NULL);";
+        "item_amount INTEGER NOT NULL);";
 
    private:
     int supply_good_1 = 0;

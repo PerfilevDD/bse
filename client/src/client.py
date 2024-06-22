@@ -7,9 +7,14 @@ import websockets
 import threading
 import json
 
+from ttkbootstrap import Style
+
 from PIL import Image, ImageTk
 url = "http://localhost:8000"
 token = ''
+user_id = 0;
+
+current_orders = set()
 
 
 
@@ -94,8 +99,10 @@ def login():
     
     print(token)
     if token != '':
+        # Wellcome func HERE
         messagebox.showinfo("", f"Wellcome")
-        #login_window.destroy()
+        login_window.destroy()
+        open_game_window()
     elif user_data == "Incorrect email or password":
         messagebox.showinfo("", f"{user_data}")
     elif user_data == "user in nor register":
@@ -132,8 +139,12 @@ def registrarion():
         r.raise_for_status()
         if r.json()['status'] == 'reg complete':
             server_auth_user(email, password)
+            
+            # Wellcome func HERE
             messagebox.showinfo("", f"Wellcome")
-            #login_window.destroy()
+            login_window.destroy()
+            open_game_window()
+            
             return r.json()
         else:
             messagebox.showinfo("", f"User alredy existes")
@@ -145,7 +156,221 @@ def registrarion():
 
 
 # MAINWINDOW ------------------------------
+
+   
+async def listen_for_updates():
+    ws_url = url.replace('http', 'ws').replace('htpps', 'wss') + '/ws'
+    print("Connecting")
+    async with websockets.connect(ws_url) as websocket:
+        print("Connected")
+        while True:
+            try:
+                message = await websocket.recv()
+                data = json.loads(message)
+                
+                action = data["action"]
+                ws_trader_id = data["trader_id"]
+                ws_item = data["item"]
+                ws_pair_item = data["pair_item"]
+                ws_price = data["price"]
+                ws_item_amount = data["item_amount"]
+                
+                
+                listbox_entry = f"Price: {ws_price}, Item Amount: {ws_item_amount}"
+                order_str = f"Item: {ws_item}, Pair Item: {ws_pair_item}, Price: {ws_price}, Item Amount: {ws_item_amount}"
+
+                if action == "add":
+                    if order_str not in current_orders:
+                        if ws_item == 'FRC':
+                            listbox_buy.insert(0, f"Price: {ws_price}, Item Amount: {ws_item_amount}")
+                        elif ws_item == "POEUR":
+                            listbox_sell.insert(0, f"Price: {ws_price}, Item Amount: {ws_item_amount}")
+                            
+                        current_orders.add(order_str)
+                        
+                elif action == "remove":
+                    if ws_item == 'FRC':
+                        items = listbox_buy.get(0, END)
+                        for i, item in enumerate(items):
+                            if item == listbox_entry:
+                                listbox_buy.delete(i)
+                                current_orders.remove(order_str)
+                                break
+                    elif ws_item == "POEUR":
+                        items = listbox_sell.get(0, END)
+                        for i, item in enumerate(items):
+                            if item == listbox_entry:
+                                listbox_sell.delete(i)
+                                current_orders.remove(order_str)
+                                break
+                
+            except websockets.ConnectionClosed:
+                break
+
+
+def start_websocket():
+    def run_loop(loop):
+        asyncio.set_event_loop(loop)
+        loop.run_until_complete(listen_for_updates())
+    
+    loop = asyncio.new_event_loop()
+    t = threading.Thread(target=run_loop, args=(loop,))
+    t.start()
+
+
+
+def buy_func(feet_price, feet_amount):
+    global url
+    
+    price = feet_price.get()
+    amount = feet_amount.get()
+    
+    try:
+        data = {'trader_id': user_id, 'item': 'FRC','pair_item': 'POEUR', 'price': price, 'item_amount': amount}
+        r = requests.post(f"{url}/trade", json = data)
+        r.raise_for_status()
+        r.json()['status'] == 'trade reg complete'
+            
+        messagebox.showinfo("", f"comlete")
+        return r.json()
+    
+    except requests.exceptions.RequestException as e:
+        messagebox.showinfo("", f"No Internet!")
+        return None  
+    
+    
+def sell_func(feet_price, feet_amount):
+    global url
+    
+    price = feet_price.get()
+    amount = feet_amount.get()
+    
+    try:
+        data = {'trader_id': user_id, 'item': 'POEUR','pair_item': 'FRC', 'price': price, 'item_amount': amount}
+        r = requests.post(f"{url}/trade", json = data)
+        r.raise_for_status()
+        r.json()['status'] == 'trade reg complete'
+            
+        messagebox.showinfo("", f"comlete")
+        return r.json()
+    
+    except requests.exceptions.RequestException as e:
+        messagebox.showinfo("", f"No Internet!")
+        return None  
+    
+
+    
+def open_game_window():
+    global root, entry_price, entry_amount, listbox_buy, listbox_sell
+    
+    # Main window
+    root = Tk()
+    root.title("Bonn Stock Exchange")
+    
+    # Style settings
+    style = Style('darkly')
+
+
+    # Window settings
+    mainframe = ttk.Frame(root, padding="70 70 70 70")
+    mainframe.grid(column=0, row=0)
+    root.columnconfigure(0, weight=1)
+    root.rowconfigure(0, weight=1)
+
+    # BUY_______________________________
+    
+    Buy = ttk.Frame(mainframe)
+    Buy.grid(row = 0, column = 1)
+    Buy.grid_columnconfigure((0,1), weight = 1)
+    Buy.grid_rowconfigure(0, weight = 1)
+    
+    # Scrollbox
+    
+    listbox_buy = Listbox(mainframe) 
+    listbox_buy.grid(row = 0, column = 0)
+    
+    listbox_buy.insert(0, f"Price: {2}, Item Amount: {23}")
         
-        
+    
+    # Labels 
+    
+    price_label = ttk.Label(Buy, text=f"Price")
+    price_label.config(font=("Courier", 16))
+    price_label.grid(column=0, row=0)
+    
+    feet_price = StringVar()
+    entry_price = ttk.Entry(Buy, textvariable=feet_price)
+    entry_price.grid(row=0, column=1, padx=20, pady=5)
+    
+    
+
+
+    amount_label = ttk.Label(Buy, text=f"Amount")
+    amount_label.grid(column=0, row=1)
+    amount_label.config(font=("Courier", 16))
+    
+    feet_amount = StringVar()
+    entry_amount = ttk.Entry(Buy, textvariable=feet_amount)
+    entry_amount.grid(row=1, column=1, padx=20, pady=5)
+    
+    
+    Button(Buy, text=f"Buy", command=lambda i=0: buy_func(feet_price, feet_amount),width=18, height=2,bg="red", fg="white").grid(column=1, row=2)
+    
+    
+    # SELL__________________________
+    
+    Sell = ttk.Frame(mainframe)
+    Sell.grid(row = 0, column = 2)
+    Sell.grid_columnconfigure((0,1), weight = 1)
+    Sell.grid_rowconfigure(0, weight = 1)
+    
+    # Scrollbox
+    
+    listbox_sell = Listbox(mainframe) 
+    listbox_sell.grid(row = 0, column = 3)
+    
+    
+    
+    
+    # Labels 
+    
+    price_label = ttk.Label(Sell, text=f"Price")
+    price_label.config(font=("Courier", 16))
+    price_label.grid(column=1, row=0)
+    
+    feet_price_sell = StringVar()
+    entry_price = ttk.Entry(Sell, textvariable=feet_price_sell)
+    entry_price.grid(row=0, column=2, padx=20, pady=5)
+    
+    
+
+
+    amount_label = ttk.Label(Sell, text=f"Amount")
+    amount_label.grid(column=1, row=1)
+    amount_label.config(font=("Courier", 16))
+    
+    feet_amount_sell = StringVar()
+    entry_amount = ttk.Entry(Sell, textvariable=feet_amount_sell)
+    entry_amount.grid(row=1, column=2, padx=20, pady=5)
+    
+    
+    Button(Sell, text=f"Sell", command=lambda i=0: sell_func(feet_price_sell, feet_amount_sell), width=18, height=2,bg="green", fg="white").grid(column=2, row=2)
+    
+    
+    
+     
+    
+
+    
+    
+
+
+    start_websocket()
+    entry_price.focus()
+
+    root.mainloop()
+    
+          
+#open_game_window()
             
 open_login_window()
