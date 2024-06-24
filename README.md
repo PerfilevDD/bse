@@ -4,6 +4,13 @@
 - FRC - FairCoin
 - POEUR - POOSE-Euro
 
+## TODO:
+- Balance an client auto aktulisieren (vlt mit Websocket (wie?))
+- Orders aus Datenbank entfernen (dafür nur func in c++, die das macht)
+- Graphik
+- Testen mit zwei user
+- ???
+
 ## !! Wenn Database locked. 
 - Use 
 ```shell
