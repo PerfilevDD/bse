@@ -18,7 +18,7 @@ import asyncio
 
 
 
-from BSE import Asset, Marketplace, User as BSEUser, Database, Order as BSEOrder
+from BSE import Asset, Marketplace, User as BSEUser, Database, Order as BSEOrder # type: ignore
 
 db = Database()
 
@@ -44,6 +44,14 @@ class Order(BaseModel):
     trader_id: int
     item: str
     pair_item: str
+    price: int
+    item_amount: int
+    
+
+class OrderToAccept(BaseModel):
+    email: str
+    trader_id: int
+    item: str
     price: int
     item_amount: int
     
@@ -184,6 +192,33 @@ async def get_orders():
                     await client.send_text(json.dumps(data))
                 except Exception as e:
                     clients.remove(client)            
+
+# ACCEPT ORDER -------------------
+
+@app.post("/accept_order")
+async def accept_order(order: OrderToAccept):
+    if ("POEUR" == order.item):
+        if(db.get_user_balance_poeur(order.email) >= order.price):
+            db.update_user_balance_poeur(order.email, -order.price)
+            db.update_user_balance_frc(order.email, order.item_amount)
+            # TODO: remove this order from database
+        else:
+            # TODO: error poeur balance is low
+            return # Delete
+    elif ("FRC" == order.item):
+        print(db.get_user_balance_frc(order.email))
+        if(db.get_user_balance_frc(order.email) >= order.price):
+            db.update_user_balance_frc(order.email, -order.price)
+            db.update_user_balance_poeur(order.email, order.item_amount)
+            # TODO: remove from database
+        else:
+            # TODO: error frc balance is low
+            return # Delete
+    else:
+        # TODO: this type didnt exist
+        return # Delete
+        
+
 
 
 # CONFIG -------------------------
