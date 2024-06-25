@@ -85,7 +85,11 @@ namespace BSE {
         auto &sqlpp11 = *db.get_sqlpp11_db();
         OrderTable orderTable;
 
-        sqlpp11(sqlpp::update(orderTable).set(orderTable.completed = c).where(orderTable.id == order_id));
+        auto timestamp = sqlpp::chrono::microsecond_point();
+
+        sqlpp11(sqlpp::update(orderTable).set(orderTable.completed = c,
+                                              orderTable.completed_timestamp = timestamp).where(
+                orderTable.id == order_id));
         completed = c;
     }
 

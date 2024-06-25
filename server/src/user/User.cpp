@@ -41,9 +41,9 @@ namespace BSE {
         UserTable userTable;
 
         auto results = sqlppDb(
-            sqlpp::select(all_of(userTable))
-            .from(userTable)
-            .where(userTable.email == email));
+                sqlpp::select(all_of(userTable))
+                        .from(userTable)
+                        .where(userTable.email == email));
 
         if (results.empty()) {
             throw std::invalid_argument("User not found");
@@ -63,9 +63,7 @@ namespace BSE {
         try {
             sqlppDb(sqlpp::insert_into(userTable).set(
                     userTable.email = email,
-                    userTable.password = password_hash,
-                    userTable.balanceFRC = 10,
-                    userTable.balancePOEUR = 101));
+                    userTable.password = password_hash));
         } catch (const sqlpp::exception &e) {
             std::cerr << e.what() << std::endl;
         }
@@ -88,7 +86,7 @@ namespace BSE {
             for (const auto &row: sqlppDb(
                     sqlpp::select(balanceTable.balance).from(balanceTable).where(balanceTable.asset_id == asset.id))) {
                 balances.push_back({
-                                           1,
+                                           static_cast<int>(row.balance),
                                            asset.name.text,
                                            asset.ticker.text
                                    });

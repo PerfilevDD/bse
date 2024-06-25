@@ -53,6 +53,7 @@ namespace BSE {
                     amount_to_update = new_order_unfullfilled_amount;
                 } else {
                     amount_to_update = matched_order_unfullfilled_amount;
+                    order.set_completed(true);
                 }
 
                 new_order.set_fullfilled_amount(new_order.get_fullfilled_amount() + amount_to_update);
@@ -138,10 +139,11 @@ namespace BSE {
     }
 
 
-    TradePair::TradePair(Database &db, int base_asset_id, int price_asset_id) : price_asset( price_asset_id), base_asset(base_asset_id),
-                                                                                                   db(db) {
+    TradePair::TradePair(Database &db, int base_asset_id, int price_asset_id) : price_asset(price_asset_id),
+                                                                                base_asset(base_asset_id),
+                                                                                db(db) {
 
-            
+
         auto &sqlppDb = *db.get_sqlpp11_db();
 
         TradePairTable tradePairTable;

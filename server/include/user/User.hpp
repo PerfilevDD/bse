@@ -21,9 +21,7 @@ namespace BSE {
                 "CREATE TABLE IF NOT EXISTS USER("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 "email TEXT NOT NULL,"
-                "password TEXT NOT NULL,"
-                "balanceFRC INTEGER DEFAULT 10,"
-                "balancePOEUR INTEGER DEFAULT 101);";
+                "password TEXT NOT NULL);";
 
         // Functions
         bool check_password(std::string &password);

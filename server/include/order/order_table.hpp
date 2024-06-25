@@ -130,6 +130,24 @@ namespace BSE {
             using _traits = sqlpp::make_traits<sqlpp::boolean>;
         };
 
+        struct CompletedTimestamp {
+            struct _alias_t {
+                static constexpr const char _literal[] = "buy";
+                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+
+                template<typename T>
+                struct _member_t {
+                    T completed_timestamp;
+
+                    T &operator()() { return completed_timestamp; }
+
+                    const T &operator()() const { return completed_timestamp; }
+                };
+            };
+            using _traits = sqlpp::make_traits<sqlpp::time_point>;
+        };
+
+
         struct Buy {
             struct _alias_t {
                 static constexpr const char _literal[] = "buy";
@@ -149,7 +167,7 @@ namespace BSE {
     }
 
     struct OrderTable
-            : sqlpp::table_t<OrderTable, OrderTable_::Id, OrderTable_::Trader_id, OrderTable_::PairId, OrderTable_::Price, OrderTable_::Amount, OrderTable_::Buy, OrderTable_::Completed, OrderTable_::FullfilledAmount> {
+            : sqlpp::table_t<OrderTable, OrderTable_::Id, OrderTable_::Trader_id, OrderTable_::PairId, OrderTable_::Price, OrderTable_::Amount, OrderTable_::Buy, OrderTable_::Completed, OrderTable_::CompletedTimestamp, OrderTable_::FullfilledAmount> {
         struct _alias_t {
             static constexpr const char _literal[] = "Trade";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
