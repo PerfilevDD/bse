@@ -67,7 +67,6 @@ class AuthenticationWindow(Tk):
 
         token, user_data = server_auth_user(self.state.url, email, password)
 
-        print(token)
         if token != '':
             # Wellcome func HERE
             messagebox.showinfo("", f"Welcome")
@@ -75,6 +74,7 @@ class AuthenticationWindow(Tk):
             user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
             user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
             # get_user_balance(user_email)
+            self.state.token = token
 
             self.destroy()
 
@@ -91,7 +91,7 @@ class AuthenticationWindow(Tk):
         password = self.entry_pasword.get()
 
         if not email:
-            messagebox.showwarning("", "Name is required")
+            messagebox.showwarning("", "Email is required")
             return
 
         if not password:
@@ -106,14 +106,15 @@ class AuthenticationWindow(Tk):
             r = requests.post(f"{url}/register", json=data)
             r.raise_for_status()
             if r.json()['status'] == 'reg complete':
-                server_auth_user(email, password)
+                server_auth_user(self.state.url, email, password)
 
                 # Wellcome func HERE
-                messagebox.showinfo("", f"Wellcome")
+                messagebox.showinfo("", f"Welcome")
 
-                user_id = jwt.decode(self.state.token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
-                user_email = jwt.decode(self.state.token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
+                user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
+                user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
                 # get_user_balance(user_email)
+                self.state.token = token
 
                 self.destroy()
 
