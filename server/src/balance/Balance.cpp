@@ -9,7 +9,7 @@ namespace BSE {
         auto &sqlppDb = *database.get_sqlpp11_db();
         BalanceTable balanceTable;
 
-        auto results = sqlppDb(sqlpp::select(sqlpp::all_of(balanceTable)).from(balanceTable).where(
+        auto results = sqlppDb(sqlpp::select(balanceTable.balance, balanceTable.asset_id, balanceTable.user_id).from(balanceTable).where(
                 balanceTable.asset_id == asset_id && balanceTable.user_id == user_id));
         for (auto &db_balance: results) {
             balance = db_balance.balance;
