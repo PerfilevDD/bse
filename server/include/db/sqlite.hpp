@@ -4,7 +4,6 @@
 #include <sqlpp11/sqlite3/connection.h>
 
 #include "vector"
-#include "tradePair/TradePair.hpp"
 #include "asset/Asset.hpp"
 
 namespace BSE {
