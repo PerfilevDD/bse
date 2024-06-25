@@ -151,16 +151,16 @@ def update_currency():
 
 
 def open_trade_window(pair_id):
-    print("Opening")
-    trade_pair = TradePair(pair_id, state=state)
+    trade_pair = TradePair(pair_id, state=state, return_to_selector_fn=open_selector)
     trade_pair.mainloop()
 
 
-# open_game_window()
+def open_selector():
+    pair_selector = PairSelector(state=state, callback_fn=open_trade_window)
+    pair_selector.mainloop()
 
 
 authentication_window = AuthenticationWindow(state=state)
 authentication_window.mainloop()
 
-pair_selector = PairSelector(state=state, callback_fn=open_trade_window)
-pair_selector.mainloop()
+open_selector()

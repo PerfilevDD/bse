@@ -5,135 +5,148 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from ttkbootstrap import Style
 
-from client.src.state import WindowState
+from state import WindowState
+
+from interactions.trading_pairs import get_trading_pair
+
+from interactions.assets import get_assets
+
+from interactions.user import get_balances
 
 
 class TradePair(Tk):
-    def __init__(self, pair_id: int, state: WindowState):
+    def __init__(self, pair_id: int, state: WindowState, return_to_selector_fn):
         super().__init__()
 
         self.title = "Trading Window"
         self.state = state
         self.pair_id = pair_id
 
-    def open_game_window(self):
+        self.trading_pair = get_trading_pair(self.state.url, pair_id)
+        self.assets = get_assets(self.state.url)
+        self.balances = get_balances(self.state.url, self.state.token)
+
+        if not self.trading_pair or not self.assets or not self.balances:
+            messagebox.showerror(title="Parsing error.",
+                                 message="Error while parsing data.")
+            self.destroy()
+            return_to_selector_fn()
+            return
+
+        self.open_trading_ui()
+
+    def open_trading_ui(self):
         # Main window
-        root = Tk()
-        root.title("Bonn Stock Exchange")
+        self.title = "Bonn Stock Exchange"
 
         # Style settings
         style = Style('darkly')
 
         # Window settings
-        mainframe = ttk.Frame(root, padding="70 70 70 70")
+        mainframe = ttk.Frame(self, padding="70 70 70 70")
         mainframe.grid(column=0, row=0)
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
 
         # Balance
-
         empty_label = ttk.Label(mainframe, text=f"     ")
         empty_label.config(font=("Courier", 12))
         empty_label.grid(column=4, row=0)
 
-        balance_label = ttk.Label(mainframe, text=f"Currency / Your Balance")
-        balance_label.config(font=("Courier", 12))
-        balance_label.grid(column=5, row=0)
-
-        listbox_balance = Listbox(mainframe)
-        listbox_balance.config(font=("Courier", 14), width=22)
-        listbox_balance.grid(row=1, column=5)
-
+        # balance_label = ttk.Label(mainframe, text=f"Currency / Your Balance")
+        # balance_label.config(font=("Courier", 12))
+        # balance_label.grid(column=5, row=0)
         # BUY_______________________________
 
         buy = ttk.Frame(mainframe)
-        buy.grid(row=1, column=1)
+        buy.grid(row=2, column=1)
         buy.grid_columnconfigure((0, 1), weight=1)
         buy.grid_rowconfigure(0, weight=1)
 
         # Scrollbox
-
-        legend_label = ttk.Label(mainframe, text=f"Price(POEUR)    Amount(--)")
-        legend_label.config(font=("Courier", 12))
+        base_asset_ticker = self.assets[self.trading_pair['base_asset']]['ticker'].upper()
+        price_asset_ticker = self.assets[self.trading_pair['price_asset']]['ticker'].upper()
+        legend_label = ttk.Label(mainframe,
+                                 text=f"Trading Pair: {base_asset_ticker}/{price_asset_ticker}\n" \
+                                      f"Balance [{base_asset_ticker}]: {self.balances[base_asset_ticker.lower()]['balance'] / 100}\n" + \
+                                      f"Balance [{price_asset_ticker}]: {self.balances[price_asset_ticker.lower()]['balance'] / 100}\n"
+                                 )
+        legend_label.config(font=("Courier", 24))
         legend_label.grid(column=0, row=0)
 
         listbox_buy = Listbox(mainframe)
         listbox_buy.config(font=("Courier", 14), width=22)
-        listbox_buy.grid(row=1, column=0)
+        listbox_buy.grid(row=2, column=0, padx=20, )
 
         # Labels
 
         price_label = ttk.Label(buy, text=f"Price")
         price_label.config(font=("Courier", 16))
-        price_label.grid(column=0, row=0)
+        price_label.grid(column=1, row=1)
 
         feet_price = StringVar()
         entry_price = ttk.Entry(buy, textvariable=feet_price)
         entry_price.config(font=("Courier", 14))
-        entry_price.grid(row=0, column=1, padx=20, pady=5)
+        entry_price.grid(row=1, column=2, padx=20, pady=5)
 
         amount_label = ttk.Label(buy, text=f"Amount")
-        amount_label.grid(column=0, row=1)
+        amount_label.grid(column=1, row=2)
         amount_label.config(font=("Courier", 16))
 
         feet_amount = StringVar()
         entry_amount = ttk.Entry(buy, textvariable=feet_amount)
         entry_amount.config(font=("Courier", 14))
-        entry_amount.grid(row=1, column=1, padx=20, pady=5)
+        entry_amount.grid(row=2, column=2, padx=20, pady=5)
 
         Button(buy, text=f"BUY --", command=lambda i=0: self.buy_func(feet_price, feet_amount), width=18, height=2,
                bg="red",
-               fg="white").grid(column=1, row=2)
+               fg="white").grid(column=2, row=3)
 
         # SELL__________________________
 
         sell = ttk.Frame(mainframe)
-        sell.grid(row=1, column=2)
+        sell.grid(row=2, column=3)
         sell.grid_columnconfigure((0, 1), weight=1)
         sell.grid_rowconfigure(0, weight=1)
 
         # Scrollbox
-        legend_label = ttk.Label(mainframe, text=f"Price(POEUR)    Amount(--)")
-        legend_label.config(font=("Courier", 12))
-        legend_label.grid(column=3, row=0)
-
         listbox_sell = Listbox(mainframe)
         listbox_sell.config(font=("Courier", 14), width=22)
-        listbox_sell.grid(row=1, column=3)
+        listbox_sell.grid(row=2, column=4)
 
         # Labels
 
         price_label = ttk.Label(sell, text=f"Price")
         price_label.config(font=("Courier", 16))
-        price_label.grid(column=1, row=0)
+        price_label.grid(column=2, row=1)
 
         feet_price_sell = StringVar()
         entry_price = ttk.Entry(sell, textvariable=feet_price_sell)
         entry_price.config(font=("Courier", 14))
-        entry_price.grid(row=0, column=2, padx=20, pady=5)
+        entry_price.grid(row=1, column=3, padx=20, pady=5)
 
         amount_label = ttk.Label(sell, text=f"Amount")
-        amount_label.grid(column=1, row=1)
+        amount_label.grid(column=2, row=2)
         amount_label.config(font=("Courier", 16))
 
         feet_amount_sell = StringVar()
         entry_amount = ttk.Entry(sell, textvariable=feet_amount_sell)
         entry_amount.config(font=("Courier", 14))
-        entry_amount.grid(row=1, column=2, padx=20, pady=5)
+        entry_amount.grid(row=2, column=3, padx=20, pady=5)
 
         Button(sell, text=f"SELL --", command=lambda i=0: self.sell_func(feet_price_sell, feet_amount_sell), width=18,
                height=2,
-               bg="green", fg="white").grid(column=2, row=2)
+               bg="green", fg="white").grid(column=3, row=3)
 
         # GRAPHIC
 
         graphic = ttk.Frame(mainframe)
-        graphic.grid(row=1, column=6)
+        graphic.grid(row=1, column=2)
         graphic.grid_columnconfigure((0, 1), weight=1)
         graphic.grid_rowconfigure(0, weight=1)
 
         frame = ttk.Frame(graphic)
-        frame.grid(column=6, row=1)
+        frame.grid(column=6, row=2)
 
         frame.pack(fill=BOTH, expand=1)
 
@@ -144,7 +157,7 @@ class TradePair(Tk):
         # start_websocket()
         entry_price.focus()
 
-        root.mainloop()
+        self.mainloop()
 
     def update_graphic(self, graphic, canvas, ax):
         database = []

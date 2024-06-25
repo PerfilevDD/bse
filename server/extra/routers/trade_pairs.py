@@ -19,13 +19,13 @@ router = APIRouter(
     tags=["Trade Pairs"]
 )
 
+
 @router.post("/trade-pairs")
 def new_trade_pairs(base_asset_id: int, price_asset_id: int, db: Annotated[Database, Depends(get_database_object)]):
-    
     new_item = TradePair(db, base_asset_id, price_asset_id)
     new_item.create_order(1, 1, 1, 1, 1)
     return {"status": "complete"}
-    
+
     return
 
 
@@ -38,4 +38,18 @@ def get_trade_pairs(db: Annotated[Database, Depends(get_database_object)]):
             "base_asset": t.get_base_asset(),
             "price_asset": t.get_price_asset(),
         } for t in trade_pairs]
+    }
+
+
+@router.get("/trade-pairs/{pair_id}")
+def get_trade_pair(pair_id: int, db: Annotated[Database, Depends(get_database_object)]):
+    try:
+        trade_pair = TradePair(db, pair_id)
+    except:
+        raise HTTPException(status_code=404, detail="Trading Pair not found")
+
+    return {
+        "pair_id": trade_pair.get_trade_pair_id(),
+        "base_asset": trade_pair.get_base_asset(),
+        "price_asset": trade_pair.get_price_asset(),
     }
