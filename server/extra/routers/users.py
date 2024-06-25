@@ -128,6 +128,5 @@ async def get_balance(current_user: Annotated[User, Depends(get_current_user)]):
 def update_balance(change: int, asset_id: int, db: Annotated[Database, Depends(get_database_object)], current_user: Annotated[User, Depends(get_current_user)]):
     user_id = current_user.get_user_id()
     balance = Balance(db, user_id, asset_id)
-    print("DFsfsdfdssf")
     balance.update_balance(change)
 

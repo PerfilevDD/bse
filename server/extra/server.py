@@ -67,20 +67,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 
-# TRADES --------------------------
-@app.post("/trade")
-async def new_trade(order: Order):
-    create_order(order.trader_id, order.item, order.pair_item, order.price, order.item_amount)
-    return {"status": "trade reg complete"}
-
-
-def create_order(pair_id: int, trader_id: int, amount: int, price: int, buy: bool):
-    try:
-        new_trade = TradePair()
-        new_trade.create_order(pair_id, trader_id, amount, price, buy)
-    except Exception as e:
-        print(f"{e}")
-
 
     
 
