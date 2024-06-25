@@ -36,16 +36,17 @@ clients = []
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
+'''
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     asyncio.create_task(get_orders())
     yield
+    '''
     
     
 app = FastAPI(
     title="Bonn Stock Exchange",
-    lifespan=lifespan
+    #lifespan=lifespan
 
 )
 
@@ -98,20 +99,7 @@ def create_order(pair_id: int, trader_id: int, amount: int, price: int, buy: boo
         print(f"{e}")
 
 
-
-async def get_orders():
-    while True:
-        await asyncio.sleep(3)
-        orders = db.get_all_orders()
-        action = "add"
-        for order in orders:
-            # Websocket
-            for client in clients:
-                data = {"action": action, "order_id": order.id, "trader_id": order.trader_id, "item": order.item, "pair_item": order.pair_item, 'price': order.price, 'item_amount': order.item_amount}
-                try:
-                    await client.send_text(json.dumps(data))
-                except Exception as e:
-                    clients.remove(client)            
+         
 
 # ACCEPT ORDER -------------------
 

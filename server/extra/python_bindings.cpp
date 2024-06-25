@@ -14,6 +14,16 @@ using namespace BSE;
 
 PYBIND11_MODULE(BSE, m) {
     m.doc() = "BSE";
+
+    pybind11::register_exception<std::invalid_argument>(m, "PyExp");
+    pybind11::register_exception<std::exception>(m, "PyExp");
+    pybind11::register_exception<std::bad_alloc>(m, "PyExp");
+    pybind11::register_exception<std::domain_error>(m, "PyExp");
+    pybind11::register_exception<std::length_error>(m, "PyExp");
+    pybind11::register_exception<std::out_of_range>(m, "PyExp");
+    pybind11::register_exception<std::range_error>(m, "PyExp");
+    pybind11::register_exception<std::overflow_error>(m, "PyExp");
+
     pybind11::class_<Order>(m, "Order")
             .def(pybind11::init<Database &, int, int, int, int, bool>());
 
