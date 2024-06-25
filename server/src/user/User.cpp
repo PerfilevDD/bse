@@ -1,4 +1,3 @@
-#include <sqlpp11/sqlite3/sqlite3.h>
 #include <sqlpp11/sqlpp11.h>
 
 #include <db/sqlite.hpp>
@@ -11,96 +10,100 @@
 
 namespace BSE {
 
-std::string User::hash(std::string& password) {
-    size_t phash = std::hash<std::string>{}(password);
-    std::ostringstream oss;
-    oss << phash;
-    return oss.str();
-}
-
-User::User(BSE::Database &database, int &user_id): user_id(user_id), db(database) {
-    auto& sqlppDb = *db.get_sqlpp11_db();
-
-    UserTable userTable;
-
-    auto results = sqlppDb(
-            sqlpp::select(all_of(userTable)).
-            from(userTable).
-            where(userTable.id == user_id));
-
-    if (results.empty())
-        throw std::invalid_argument("User not found");
-
-    const auto& result = results.front();
-    email = result.email;
-    password_hash = result.password;
-}
-
-User::User(Database& database, std::string& email) : db(database), email(email) {
-    auto& sqlppDb = *db.get_sqlpp11_db();
-
-    UserTable userTable;
-
-    for (const auto& row : sqlppDb(sqlpp::select(userTable.password).from(userTable).where(userTable.email == email))) {
-        password_hash = row.password;
+    std::string User::hash(std::string &password) {
+        size_t phash = std::hash<std::string>{}(password);
+        std::ostringstream oss;
+        oss << phash;
+        return oss.str();
     }
-    std::cout << "hash " << password_hash << std::endl;
-}
 
-User::User(Database& database, std::string& email, std::string& password)
-    : db(database), email(email), password_hash(hash(password)) {
-    auto& sqlppDb = *db.get_sqlpp11_db();
+    User::User(BSE::Database &database, int &user_id) : user_id(user_id), db(database) {
+        auto &sqlppDb = *db.get_sqlpp11_db();
 
-    UserTable userTable;
+        UserTable userTable;
 
-    try {
-        sqlppDb(sqlpp::insert_into(userTable).set(
-            userTable.email = email,
-            userTable.password = password_hash,
-            userTable.balanceFRC = 10,
-            userTable.balancePOEUR = 101));
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
+        auto results = sqlppDb(
+                sqlpp::select(all_of(userTable)).
+                        from(userTable).
+                        where(userTable.id == user_id));
+
+        if (results.empty())
+            throw std::invalid_argument("User not found");
+
+        const auto &result = results.front();
+        email = result.email;
+        password_hash = result.password;
     }
-}
 
-bool User::check_password(std::string& password) {
-    std::cout << "pass " << password << std::endl;
-    std::cout << "hash " << password_hash << std::endl;
-    return password_hash == hash(password);
-}
+    User::User(Database &database, std::string &email) : db(database), email(email) {
+        auto &sqlppDb = *db.get_sqlpp11_db();
 
-std::vector<BalanceAndAsset> User::get_balances() {
-    auto& sqlppDb = *db.get_sqlpp11_db();
-    std::vector<BalanceAndAsset> balances;
-    AssetTable assetTable;
-    BalanceTable balanceTable;
-    auto assets = sqlppDb(sqlpp::select(sqlpp::all_of(assetTable)).from(assetTable).unconditionally());
-    for (const auto& asset : assets) {
-        bool asset_found = false;
-        for (const auto& row : sqlppDb(sqlpp::select(balanceTable.balance).from(balanceTable).where(balanceTable.asset_id == asset.id))) {
-            balances.push_back({
-            1,
-            asset.name.text,
-            asset.ticker.text
-            });
-            asset_found = true;
-            break;
+        UserTable userTable;
+
+        for (const auto &row: sqlppDb(
+                sqlpp::select(userTable.password).from(userTable).where(userTable.email == email))) {
+            password_hash = row.password;
         }
-        if(!asset_found){
-            balances.push_back({
-                   0,
-                   asset.name.text,
-                   asset.ticker.text
-           });
-       }
+        std::cout << "hash " << password_hash << std::endl;
+    }
+
+    User::User(Database &database, std::string &email, std::string &password)
+            : db(database), email(email), password_hash(hash(password)) {
+        auto &sqlppDb = *db.get_sqlpp11_db();
+
+        UserTable userTable;
+
+        try {
+            sqlppDb(sqlpp::insert_into(userTable).set(
+                    userTable.email = email,
+                    userTable.password = password_hash,
+                    userTable.balanceFRC = 10,
+                    userTable.balancePOEUR = 101));
+        } catch (const sqlpp::exception &e) {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
+    bool User::check_password(std::string &password) {
+        std::cout << "pass " << password << std::endl;
+        std::cout << "hash " << password_hash << std::endl;
+        return password_hash == hash(password);
+    }
+
+    std::vector<BalanceAndAsset> User::get_balances() {
+        auto &sqlppDb = *db.get_sqlpp11_db();
+        std::vector<BalanceAndAsset> balances;
+        AssetTable assetTable;
+        BalanceTable balanceTable;
+        auto assets = sqlppDb(sqlpp::select(sqlpp::all_of(assetTable)).from(assetTable).unconditionally());
+        for (const auto &asset: assets) {
+            bool asset_found = false;
+            for (const auto &row: sqlppDb(
+                    sqlpp::select(balanceTable.balance).from(balanceTable).where(balanceTable.asset_id == asset.id))) {
+                balances.push_back({
+                                           1,
+                                           asset.name.text,
+                                           asset.ticker.text
+                                   });
+                asset_found = true;
+                break;
+            }
+            if (!asset_found) {
+                balances.push_back({
+                                           0,
+                                           asset.name.text,
+                                           asset.ticker.text
+                                   });
+            }
+
+        }
+
+        return balances;
 
     }
 
-    return balances;
-
+    void User::update_balance(int change, int asset_id) {
+        Balance balance(db, user_id, asset_id);
+        balance.update_balance(change);
+    }
 }
-
-void User::update_balance(int change, int asset_id) {
-}
-}  // namespace BSE

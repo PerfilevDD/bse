@@ -1,4 +1,5 @@
 #pragma once
+
 #include <string>
 
 namespace BSE {
@@ -13,10 +14,11 @@ namespace BSE {
               "ticker       CHAR(50)        NOT NULL," \
               "supply        INT            DEFAULT 0);";
 
-      // Getters & Setters
-        int get_asset_id(){
+        // Getters & Setters
+        int get_asset_id() {
             return asset_id;
         }
+
     private:
         std::string name;
         std::string ticker;

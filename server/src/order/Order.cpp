@@ -9,44 +9,45 @@
 
 namespace BSE {
 
-Order::Order(Database& Database,
-             int trader_id,
-             int pair_id,
-             int price,
-             int amount,
-             bool buy) :        db(Database),
-                                trader_id(trader_id),
-                                pair_id(pair_id),
-                                price(price),
-                                amount(amount),
-                                buy(buy),
-                                fullfilled_amount(0),
-                                completed(false){
-    auto& sqlppDb = *db.get_sqlpp11_db();
-
-    OrderTable orderTable;
-
-    try {
-        sqlppDb(sqlpp::insert_into(orderTable).set(
-            orderTable.trader_id = trader_id,
-            orderTable.price = price,
-            orderTable.amount = amount,
-            orderTable.pair_id = pair_id,
-            orderTable.completed = false,
-            orderTable.fullfilled_amount = 0,
-            orderTable.buy = buy));
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-}
-
-Order::Order(BSE::Database &Database, int order_id): db(Database), order_id(order_id) {
-        auto& sqlppDb = *db.get_sqlpp11_db();
+    Order::Order(Database &Database,
+                 int trader_id,
+                 int pair_id,
+                 int price,
+                 int amount,
+                 bool buy) : db(Database),
+                             trader_id(trader_id),
+                             pair_id(pair_id),
+                             price(price),
+                             amount(amount),
+                             buy(buy),
+                             fullfilled_amount(0),
+                             completed(false) {
+        auto &sqlppDb = *db.get_sqlpp11_db();
 
         OrderTable orderTable;
 
         try {
-            for (const auto& row : sqlppDb(sqlpp::select(all_of(orderTable)).from(orderTable).where(orderTable.id == order_id))) {
+            sqlppDb(sqlpp::insert_into(orderTable).set(
+                    orderTable.trader_id = trader_id,
+                    orderTable.price = price,
+                    orderTable.amount = amount,
+                    orderTable.pair_id = pair_id,
+                    orderTable.completed = false,
+                    orderTable.fullfilled_amount = 0,
+                    orderTable.buy = buy));
+        } catch (const sqlpp::exception &e) {
+            std::cerr << e.what() << std::endl;
+        }
+    }
+
+    Order::Order(BSE::Database &Database, int order_id) : db(Database), order_id(order_id) {
+        auto &sqlppDb = *db.get_sqlpp11_db();
+
+        OrderTable orderTable;
+
+        try {
+            for (const auto &row: sqlppDb(
+                    sqlpp::select(all_of(orderTable)).from(orderTable).where(orderTable.id == order_id))) {
                 trader_id = row.trader_id;
                 price = row.price;
                 pair_id = row.pair_id;
@@ -56,29 +57,46 @@ Order::Order(BSE::Database &Database, int order_id): db(Database), order_id(orde
                 fullfilled_amount = row.fullfilled_amount;
                 return;
             }
-        } catch (const sqlpp::exception& e) {
+        } catch (const sqlpp::exception &e) {
             std::cerr << e.what() << std::endl;
         }
 
-    throw std::exception();
+        throw std::exception();
 
-}
+    }
 
-    Order::Order(Database& Database,
+    Order::Order(Database &Database,
                  int trader_id,
                  int pair_id,
                  int price,
                  int amount,
                  int fullfilled_amount,
                  bool completed,
-                 bool buy) :     db(Database),
-                                    trader_id(trader_id),
-                                    pair_id(pair_id),
-                                    price(price),
-                                    amount(amount),
-                                    buy(buy),
-                                    completed(completed),
-                                    fullfilled_amount(fullfilled_amount)
-                {}
+                 bool buy) : db(Database),
+                             trader_id(trader_id),
+                             pair_id(pair_id),
+                             price(price),
+                             amount(amount),
+                             buy(buy),
+                             completed(completed),
+                             fullfilled_amount(fullfilled_amount) {}
+
+    void Order::set_completed(bool c) {
+        auto &sqlpp11 = *db.get_sqlpp11_db();
+        OrderTable orderTable;
+
+        sqlpp11(sqlpp::update(orderTable).set(orderTable.completed = c).where(orderTable.id == order_id));
+        completed = c;
+    }
+
+    void Order::set_fullfilled_amount(int new_fullfilled_amount) {
+        auto &sqlpp11 = *db.get_sqlpp11_db();
+        OrderTable orderTable;
+
+        sqlpp11(sqlpp::update(orderTable).set(orderTable.fullfilled_amount = new_fullfilled_amount).where(
+                orderTable.id == order_id));
+        fullfilled_amount = new_fullfilled_amount;
+
+    }
 
 }  // namespace BSE
