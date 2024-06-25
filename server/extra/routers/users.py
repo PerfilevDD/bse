@@ -13,10 +13,6 @@ from jwt.exceptions import InvalidTokenError
 
 from BSE import User as BSEUser, Database
 
-
-db = Database()
-
-
 router = APIRouter(
     tags=["Authentication"]
 )
@@ -26,8 +22,8 @@ SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 
 @router.post("/token")
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
@@ -53,20 +49,21 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
     return Token(access_token=access_token, token_type="bearer")
 
 
-
 @router.post("/register")
-async def register_user(user: User, db: Annotated[dict, Depends(get_database_object)]):
+async def register_user(user: User, db: Annotated[Database, Depends(get_database_object)]):
     if not db.find_user_by_email(user.email):
         create_user(db, user.email, user.password)
         return {"status": "reg complete"}
     else:
         return {"status": "user is already reg"}
 
+
 def create_user(db, email: str, password: str):
     try:
         BSEUser(db, email, password)
     except Exception as e:
         print(f"{e}")
+
 
 def authenticate_user(email: str, password: str):
     user_id = db.find_user_by_email(email)
@@ -78,6 +75,7 @@ def authenticate_user(email: str, password: str):
         error = 'false pass'
         return False, error
     return user_id, error
+
 
 def verify_password(user_id, password):
     user = BSEUser(db, user_id)
@@ -121,7 +119,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
 
 @router.post('/test_balance')
-def test_balance(user_id: int):
+def test_balance(user_id: int, db: Annotated[Database, Depends(get_database_object)]):
     user = BSEUser(db, user_id)
     return user.get_balances()
-

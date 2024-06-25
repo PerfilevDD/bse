@@ -3,7 +3,6 @@ from typing import Annotated
 
 from contextlib import asynccontextmanager
 
-
 import jwt
 from fastapi import Depends, FastAPI, HTTPException, status, WebSocket
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
@@ -20,19 +19,14 @@ from dependencies import get_database_object
 from models.models import OrderToAccept, Order
 from routers.users import router as user_router
 from routers.orders import router as orders_router
+from routers.trade_pairs import router as trade_pairs_router
+from routers.assets import router as assets_router
 
-
-
-from BSE import Asset, TradePair, User as BSEUser, Database, Order as BSEOrder, OrderDB # type: ignore
+from BSE import Asset, TradePair, User as BSEUser, Database, Order as BSEOrder, OrderDB  # type: ignore
 
 db = Database()
 
 clients = []
-
-
-
-
-
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -42,18 +36,20 @@ async def lifespan(app: FastAPI):
     asyncio.create_task(get_orders())
     yield
     '''
-    
-    
+
 app = FastAPI(
     title="Bonn Stock Exchange",
-    #lifespan=lifespan
+    # lifespan=lifespan
 
 )
 
 app.include_router(router=user_router)
 app.include_router(router=orders_router)
+app.include_router(router=assets_router)
+app.include_router(router=trade_pairs_router)
 
-# Websocket to send a data on client 
+
+# Websocket to send a data on client
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
@@ -62,14 +58,12 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             message = await websocket.receive_text()
             data = json.loads(message)
-            
+
             if data["action"] == "register":
                 user_id = data["user_id"]
                 clients[user_id] = websocket
     except Exception as e:
         clients.remove(websocket)
-
-
 
 
 # BALANCE ---------------------
@@ -81,7 +75,6 @@ async def get_balance(email):
     return {"frc": user_balanceFRC, "poeur": user_balancePOEUR}
 
 
-
 # TRADES --------------------------
 @app.post("/trade")
 async def new_trade(order: Order):
@@ -89,8 +82,6 @@ async def new_trade(order: Order):
     return {"status": "trade reg complete"}
 
 
-
-        
 def create_order(pair_id: int, trader_id: int, amount: int, price: int, buy: bool):
     try:
         new_trade = TradePair()
@@ -99,34 +90,30 @@ def create_order(pair_id: int, trader_id: int, amount: int, price: int, buy: boo
         print(f"{e}")
 
 
-         
-
 # ACCEPT ORDER -------------------
 
 @app.post("/accept_order")
 async def accept_order(order: OrderToAccept):
     if ("POEUR" == order.item):
-        if(db.get_user_balance_poeur(order.email) >= order.price):
+        if (db.get_user_balance_poeur(order.email) >= order.price):
             db.update_user_balance_poeur(order.email, -order.price)
             db.update_user_balance_frc(order.email, order.item_amount)
             # TODO: remove this order from database, we have here order.order_id
         else:
             # TODO: error poeur balance is low
-            return # Delete
+            return  # Delete
     elif ("FRC" == order.item):
         print(db.get_user_balance_frc(order.email))
-        if(db.get_user_balance_frc(order.email) >= order.price):
+        if (db.get_user_balance_frc(order.email) >= order.price):
             db.update_user_balance_frc(order.email, -order.price)
             db.update_user_balance_poeur(order.email, order.item_amount)
             # TODO: remove from database
         else:
             # TODO: error frc balance is low
-            return # Delete
+            return  # Delete
     else:
         # TODO: this type didnt exist
-        return # Delete
-        
-
+        return  # Delete
 
 
 # CONFIG -------------------------
@@ -134,9 +121,8 @@ async def accept_order(order: OrderToAccept):
 async def redirect():
     return RedirectResponse(url="/docs")
 
+
 if __name__ == "__main__":
-    
-    
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--port', type=int, default=8000, help="The port on which the api will be accessible.")
     parser.add_argument('-ho', '--host', default="localhost", help="The host on which the api will be accessible.")
