@@ -12,8 +12,9 @@ namespace BSE {
 
         Asset(int asset_id, std::string name, std::string ticker);
 
-        inline static std::string create_table = "CREATE TABLE IF NOT EXISTS ASSET("  \
-              "id INTEGER PRIMARY KEY       NOT NULL AUTOINCREMENT," \
+        inline static std::string create_table = 
+              "CREATE TABLE IF NOT EXISTS ASSET("  \
+              "id INTEGER PRIMARY KEY        AUTOINCREMENT," \
               "name          CHAR(50)       NOT NULL," \
               "ticker       CHAR(50)        NOT NULL," \
               "supply        INT            DEFAULT 0);";
