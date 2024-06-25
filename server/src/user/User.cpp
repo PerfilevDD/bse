@@ -70,8 +70,6 @@ namespace BSE {
     }
 
     bool User::check_password(std::string &password) {
-        std::cout << "pass " << password << std::endl;
-        std::cout << "hash " << password_hash << std::endl;
         return password_hash == hash(password);
     }
 
