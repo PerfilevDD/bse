@@ -25,7 +25,13 @@ PYBIND11_MODULE(BSE, m) {
     pybind11::register_exception<std::overflow_error>(m, "overflow_error");
 
     pybind11::class_<Order>(m, "Order")
-            .def(pybind11::init<Database &, int, int, int, int, bool>());
+            .def(pybind11::init<Database &, int, int, int, int, bool>())
+            .def("get_trader_id", &Order::get_trader_id)
+            .def("get_price", &Order::get_price)
+            .def("get_amount", &Order::get_amount)
+            .def("get_fullfilled_amount", &Order::get_fullfilled_amount)
+            .def("is_buy", &Order::is_buy)
+            .def("is_completed", &Order::is_completed);
 
     pybind11::class_<OrderDB>(m, "OrderDB")
             .def(pybind11::init<>())
@@ -38,10 +44,10 @@ PYBIND11_MODULE(BSE, m) {
 
 
     pybind11::class_<BalanceAndAsset>(m, "BalanceAndAsset")
-        .def(pybind11::init<>())
-        .def_readwrite("balance", &BalanceAndAsset::balance)
-        .def_readwrite("name", &BalanceAndAsset::name)
-        .def_readwrite("ticker", &BalanceAndAsset::ticker);
+            .def(pybind11::init<>())
+            .def_readwrite("balance", &BalanceAndAsset::balance)
+            .def_readwrite("name", &BalanceAndAsset::name)
+            .def_readwrite("ticker", &BalanceAndAsset::ticker);
 
     pybind11::class_<Database, std::shared_ptr<Database>>(m, "Database")
             .def(pybind11::init<>())
