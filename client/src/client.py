@@ -514,6 +514,6 @@ def update_graphic(graphic, canvas, ax):
     
     graphic.after(10000, update_graphic)
           
-open_game_window()
+#open_game_window()
             
-#open_login_window()
+open_login_window()

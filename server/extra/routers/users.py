@@ -51,11 +51,13 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
 
 @router.post("/register")
 async def register_user(user: User, db: Annotated[Database, Depends(get_database_object)]):
-    if not db.find_user_by_email(user.email):
-        create_user(db, user.email, user.password)
-        return {"status": "reg complete"}
-    else:
+    try:
+        user = BSEUser(db, user.email)
         return {"status": "user is already reg"}
+    except Exception as e:
+        if e == "User not found":
+            create_user(db, user.email, user.password)
+            return {"status": "reg complete"}
 
 
 def create_user(db, email: str, password: str):
