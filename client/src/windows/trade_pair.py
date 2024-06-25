@@ -1,4 +1,4 @@
-from tkinter import Tk, Listbox, ttk, StringVar, Button, BOTH, messagebox
+from tkinter import Tk, Listbox, ttk, StringVar, Button, BOTH, messagebox, END
 
 import requests
 from matplotlib import pyplot as plt
@@ -7,11 +7,24 @@ from ttkbootstrap import Style
 
 from state import WindowState
 
-from interactions.trading_pairs import get_trading_pair
+from interactions.trading_pairs import get_trading_pair, get_orders
 
 from interactions.assets import get_assets
 
 from interactions.user import get_balances
+
+
+def _parse_orderbook(orders):
+    old_price = -1
+    amount = 0
+    for order in orders:
+        if order['price'] != old_price and old_price != -1:
+            yield (amount, old_price)
+            amount = 0
+        old_price = order['price']
+        amount += order['amount'] - order['fullfilled_amount']
+    if old_price != -1:
+        yield (amount, old_price)
 
 
 class TradePair(Tk):
@@ -25,6 +38,7 @@ class TradePair(Tk):
         self.trading_pair = get_trading_pair(self.state.url, pair_id)
         self.assets = get_assets(self.state.url)
         self.balances = get_balances(self.state.url, self.state.token)
+        self.orders = get_orders(self.state.url, pair_id)
 
         if not self.trading_pair or not self.assets or not self.balances:
             messagebox.showerror(title="Parsing error.",
@@ -78,6 +92,9 @@ class TradePair(Tk):
         listbox_buy.config(font=("Courier", 14), width=22)
         listbox_buy.grid(row=2, column=0, padx=20, )
 
+        for amount, price in _parse_orderbook(self.orders['buy']):
+            listbox_buy.insert(END, f"{amount} {base_asset_ticker} for {price} {price_asset_ticker}")
+
         # Labels
 
         price_label = ttk.Label(buy, text=f"Price")
@@ -114,6 +131,8 @@ class TradePair(Tk):
         listbox_sell.config(font=("Courier", 14), width=22)
         listbox_sell.grid(row=2, column=4)
 
+        for amount, price in _parse_orderbook(self.orders['sell']):
+            listbox_sell.insert(END, f"{amount} {base_asset_ticker} for {price} {price_asset_ticker}")
         # Labels
 
         price_label = ttk.Label(sell, text=f"Price")
