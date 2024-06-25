@@ -5,12 +5,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
-from server.extra.dependencies import get_database_object
-from server.extra.models.models import User, Token
+from dependencies import get_database_object
+from models.models import User, Token
 
 from BSE import User as BSEUser, Database
 
-router = APIRouter()
+router = APIRouter(
+    tags=["Authentication"]
+)
 
 # LOGIN --------------------
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
