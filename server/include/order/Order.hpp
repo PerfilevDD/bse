@@ -16,11 +16,21 @@ class Order {
           bool buy);
 
     Order(Database& Database,
+          int trader_id,
+          int pair_id,
+          int price,
+          int amount,
+          bool buy,
+          bool insert);
+
+
+    Order(Database& Database,
           int order_id);
 
     inline static std::string create_table =
             "CREATE TABLE IF NOT EXISTS ORDER("
             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "trader_id INT NOT NULL,"
             "pair_id INT NOT NULL,"
             "price INT NOT NULL,"
             "amount INT NOT NULL,"
@@ -31,7 +41,9 @@ private:
     int order_id;
     Database& db;
     int trader_id;
+    int pair_id;
     int price;
-    int item_amount;
+    int amount;
+    bool buy;
 };
 }  // namespace BSE

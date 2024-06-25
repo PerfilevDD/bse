@@ -13,11 +13,13 @@ Order::Order(Database& Database,
              int trader_id,
              int pair_id,
              int price,
-             int item_amount,
-             bool buy) : db(Database),
+             int amount,
+             bool buy) :        db(Database),
                                 trader_id(trader_id),
+                                pair_id(pair_id),
                                 price(price),
-                                item_amount(item_amount) {
+                                amount(amount),
+                                buy(buy){
     auto& sqlppDb = *db.get_sqlpp11_db();
 
     OrderTable orderTable;
@@ -26,12 +28,48 @@ Order::Order(Database& Database,
         sqlppDb(sqlpp::insert_into(orderTable).set(
             orderTable.trader_id = trader_id,
             orderTable.price = price,
-            orderTable.item_amount = item_amount));
+            orderTable.amount = amount,
+            orderTable.pair_id = pair_id,
+            orderTable.buy = buy));
     } catch (const sqlpp::exception& e) {
         std::cerr << e.what() << std::endl;
     }
 }
 
-Order::Order(BSE::Database &Database, int order_id): db(Database), order_id(order_id) {}
+Order::Order(BSE::Database &Database, int order_id): db(Database), order_id(order_id) {
+        auto& sqlppDb = *db.get_sqlpp11_db();
+
+        OrderTable orderTable;
+
+        try {
+            for (const auto& row : sqlppDb(sqlpp::select(all_of(orderTable)).from(orderTable).where(orderTable.id == order_id))) {
+                order_id = row.id;
+                trader_id = row.trader_id;
+                price = row.price;
+                pair_id = row.pair_id;
+                buy = row.buy;
+                amount = row.amount;
+                return;
+            }
+        } catch (const sqlpp::exception& e) {
+            std::cerr << e.what() << std::endl;
+        }
+
+    throw std::exception();
+
+}
+
+    Order::Order(Database &Database,
+                 int trader_id,
+                 int pair_id,
+                 int price,
+                 int amount,
+                 bool buy,
+                 bool insert) :     db(Database),
+                                    trader_id(trader_id),
+                                    pair_id(pair_id),
+                                    price(price),
+                                    amount(amount),
+                                    buy(buy) {}
 
 }  // namespace BSE

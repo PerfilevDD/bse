@@ -39,35 +39,19 @@ namespace BSE {
 
 
 
-        struct Item {
+        struct PairId {
             struct _alias_t {
-                static constexpr const char _literal[] = "item";
+                static constexpr const char _literal[] = "pair_id";
                 using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
                 template<typename T>
                 struct _member_t {
-                    T item;
-                    T& operator()() { return item; }
-                    const T& operator()() const { return item; }
+                    T pair_id;
+                    T& operator()() { return pair_id; }
+                    const T& operator()() const { return pair_id; }
                 };
             };
-            using _traits = sqlpp::make_traits<sqlpp::varchar>;
+            using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
-
-        struct Pair_item {
-            struct _alias_t {
-                static constexpr const char _literal[] = "pair_item";
-                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-                template<typename T>
-                struct _member_t {
-                    T pair_item;
-                    T& operator()() { return pair_item; }
-                    const T& operator()() const { return pair_item; }
-                };
-            };
-            using _traits = sqlpp::make_traits<sqlpp::varchar>;
-        };
-        
-
 
         struct Price {
             struct _alias_t {
@@ -82,25 +66,41 @@ namespace BSE {
             };
             using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
+        
 
 
-
-        struct Item_amount {
+        struct Amount {
             struct _alias_t {
-                static constexpr const char _literal[] = "item_amount";
+                static constexpr const char _literal[] = "amount";
                 using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
                 template<typename T>
                 struct _member_t {
-                    T item_amount;
-                    T& operator()() { return item_amount; }
-                    const T& operator()() const { return item_amount; }
+                    T amount;
+                    T& operator()() { return amount; }
+                    const T& operator()() const { return amount; }
                 };
             };
             using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
+
+
+
+        struct Buy {
+            struct _alias_t {
+                static constexpr const char _literal[] = "buy";
+                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+                template<typename T>
+                struct _member_t {
+                    T buy;
+                    T& operator()() { return buy; }
+                    const T& operator()() const { return buy; }
+                };
+            };
+            using _traits = sqlpp::make_traits<sqlpp::boolean>;
+        };
     }
     
-    struct OrderTable : sqlpp::table_t<OrderTable, OrderTable_::Id, OrderTable_::Trader_id, OrderTable_::Item, OrderTable_::Pair_item, OrderTable_::Price, OrderTable_::Item_amount> {
+    struct OrderTable : sqlpp::table_t<OrderTable, OrderTable_::Id, OrderTable_::Trader_id, OrderTable_::PairId, OrderTable_::Price, OrderTable_::Amount, OrderTable_::Buy> {
         struct _alias_t {
             static constexpr const char _literal[] = "Order";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;

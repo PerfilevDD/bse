@@ -64,6 +64,8 @@ enable_testing()
 #----------Download and use pybind11-----------#
 #----------------------------------------------#
 
+find_package(PythonLibs REQUIRED)
+include_directories(${PYTHON_INCLUDE_DIRS})
 # Download pybind11
 FetchContent_Declare(
   pybind11
@@ -130,7 +132,7 @@ install(TARGETS BSE
 
 
 
-target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3)
+target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3 ${PYTHON_LIBRARIES})
 
 
 
