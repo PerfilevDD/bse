@@ -7,24 +7,30 @@
 namespace BSE {
 class Order {
    public:
-    Order(int id);
 
     Order(Database& Database,
           int trader_id,
-          std::string& item,
-          std::string& pair_item,
+          int pair_id,
           int price,
-          int item_amount);
+          int amount,
+          bool buy);
 
     Order(Database& Database,
           int order_id);
 
-   private:
+    inline static std::string create_table =
+            "CREATE TABLE IF NOT EXISTS ORDER("
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+            "pair_id INT NOT NULL,"
+            "price INT NOT NULL,"
+            "amount INT NOT NULL,"
+            "buy BOOL NOT NULL);";
+
+
+private:
     int order_id;
     Database& db;
     int trader_id;
-    std::string item;
-    std::string pair_item;
     int price;
     int item_amount;
 };

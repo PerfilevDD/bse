@@ -2,7 +2,7 @@
 #include <sqlpp11/sqlite3/sqlite3.h>
 
 namespace BSE {
-    namespace MarketplaceTable_ {
+    namespace OrderTable_ {
 
 // https://github.com/rbock/sqlpp11/blob/main/tests/sqlite3/usage/Sample.cpp 
 // Dont delete, sonst ich lösch alles
@@ -100,15 +100,15 @@ namespace BSE {
         };
     }
     
-    struct MarketplaceTable : sqlpp::table_t<MarketplaceTable, MarketplaceTable_::Id, MarketplaceTable_::Trader_id, MarketplaceTable_::Item, MarketplaceTable_::Pair_item, MarketplaceTable_::Price, MarketplaceTable_::Item_amount> {
+    struct OrderTable : sqlpp::table_t<OrderTable, OrderTable_::Id, OrderTable_::Trader_id, OrderTable_::Item, OrderTable_::Pair_item, OrderTable_::Price, OrderTable_::Item_amount> {
         struct _alias_t {
-            static constexpr const char _literal[] = "MARKETPLACE";
+            static constexpr const char _literal[] = "Order";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
             template<typename T>
             struct _member_t {
-                T marketplaceTable;
-                T& operator()() { return marketplaceTable; }
-                const T& operator()() const { return marketplaceTable; }
+                T OrderTable;
+                T& operator()() { return OrderTable; }
+                const T& operator()() const { return OrderTable; }
             };
         };
     };

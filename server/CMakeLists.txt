@@ -101,8 +101,9 @@ file(GLOB SRC_FILES
   ${PROJECT_SOURCE_DIR}/src/*.cpp
   ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
   ${PROJECT_SOURCE_DIR}/src/db/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
   ${PROJECT_SOURCE_DIR}/src/order/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
   ${PROJECT_SOURCE_DIR}/src/user/*.cpp
         )
 
@@ -112,7 +113,7 @@ file(GLOB SRC_FILES
 ${PROJECT_SOURCE_DIR}/src/*.cpp
 ${PROJECT_SOURCE_DIR}/src/db/*.cpp
 ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
-${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
 ${PROJECT_SOURCE_DIR}/src/order/*.cpp
 ${PROJECT_SOURCE_DIR}/src/user/*.cpp)
 

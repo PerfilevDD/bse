@@ -5,32 +5,28 @@
 #include <iostream>
 #include <sstream>
 #include <order/Order.hpp>
-#include <marketplace/marketplace_table.hpp>
+#include <order/order_table.hpp>
 
 namespace BSE {
 
 Order::Order(Database& Database,
              int trader_id,
-             std::string& item,
-             std::string& pair_item,
+             int pair_id,
              int price,
-             int item_amount) : db(Database),
+             int item_amount,
+             bool buy) : db(Database),
                                 trader_id(trader_id),
-                                item(item),
-                                pair_item(pair_item),
                                 price(price),
                                 item_amount(item_amount) {
     auto& sqlppDb = *db.get_sqlpp11_db();
 
-    MarketplaceTable marketplaceTable;
-    std::cout << item << std::endl;
+    OrderTable orderTable;
+
     try {
-        sqlppDb(sqlpp::insert_into(marketplaceTable).set(
-            marketplaceTable.trader_id = trader_id,
-            marketplaceTable.item = item,
-            marketplaceTable.pair_item = pair_item,
-            marketplaceTable.price = price,
-            marketplaceTable.item_amount = item_amount));
+        sqlppDb(sqlpp::insert_into(orderTable).set(
+            orderTable.trader_id = trader_id,
+            orderTable.price = price,
+            orderTable.item_amount = item_amount));
     } catch (const sqlpp::exception& e) {
         std::cerr << e.what() << std::endl;
     }
