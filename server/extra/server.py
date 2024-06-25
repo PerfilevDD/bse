@@ -19,10 +19,11 @@ import asyncio
 from dependencies import get_database_object
 from models.models import OrderToAccept, Order
 from routers.users import router as user_router
+from routers.orders import router as orders_router
 
 
 
-from BSE import Asset, Marketplace, User as BSEUser, Database, Order as BSEOrder # type: ignore
+from BSE import Asset, TradePair, User as BSEUser, Database, Order as BSEOrder, OrderDB # type: ignore
 
 db = Database()
 
@@ -49,6 +50,7 @@ app = FastAPI(
 )
 
 app.include_router(router=user_router)
+app.include_router(router=orders_router)
 
 # Websocket to send a data on client 
 @app.websocket("/ws")
@@ -57,7 +59,12 @@ async def websocket_endpoint(websocket: WebSocket):
     clients.append(websocket)
     try:
         while True:
-            await websocket.receive_text()
+            message = await websocket.receive_text()
+            data = json.loads(message)
+            
+            if data["action"] == "register":
+                user_id = data["user_id"]
+                clients[user_id] = websocket
     except Exception as e:
         clients.remove(websocket)
 
@@ -80,11 +87,17 @@ async def new_trade(order: Order):
     create_order(order.trader_id, order.item, order.pair_item, order.price, order.item_amount)
     return {"status": "trade reg complete"}
 
-def create_order(trader_id: int, item: str, pair_item: str, price: int, item_amount: int):
+
+
+        
+def create_order(pair_id: int, trader_id: int, amount: int, price: int, buy: bool):
     try:
-        BSEOrder(db, trader_id, item, pair_item, price, item_amount)
+        new_trade = TradePair()
+        new_trade.create_order(pair_id, trader_id, amount, price, buy)
     except Exception as e:
         print(f"{e}")
+
+
 
 async def get_orders():
     while True:

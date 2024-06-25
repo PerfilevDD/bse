@@ -5,6 +5,7 @@
 #include <tradePair/TradePair.hpp>
 #include <order/Order.hpp>
 #include <user/User.hpp>
+#include <vector>
 
 #include "db/sqlite.hpp"
 #include "string"
