@@ -345,8 +345,10 @@ def open_trade_window(pair_id):
 
 
 # open_game_window()
-pair_selector = PairSelector(state=state, callback_fn=open_trade_window)
-pair_selector.mainloop()
+
 
 authentication_window = AuthenticationWindow(state=state)
 authentication_window.mainloop()
+
+pair_selector = PairSelector(state=state, callback_fn=open_trade_window)
+pair_selector.mainloop()
