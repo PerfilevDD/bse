@@ -36,6 +36,13 @@ PYBIND11_MODULE(BSE, m) {
             .def_readwrite("price", &OrderDB::price)
             .def_readwrite("item_amount", &OrderDB::item_amount);
 
+
+    pybind11::class_<BalanceAndAsset>(m, "BalanceAndAsset")
+        .def(pybind11::init<>())
+        .def_readwrite("balance", &BalanceAndAsset::balance)
+        .def_readwrite("name", &BalanceAndAsset::name)
+        .def_readwrite("ticker", &BalanceAndAsset::ticker);
+
     pybind11::class_<Database, std::shared_ptr<Database>>(m, "Database")
             .def(pybind11::init<>())
             .def("get_sqlpp11_db", &Database::get_sqlpp11_db);

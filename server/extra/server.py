@@ -66,14 +66,6 @@ async def websocket_endpoint(websocket: WebSocket):
         clients.remove(websocket)
 
 
-# BALANCE ---------------------
-
-@app.get("/balance{email}")
-async def get_balance(email):
-    user_balanceFRC = db.get_user_balance_frc(email)
-    user_balancePOEUR = db.get_user_balance_poeur(email)
-    return {"frc": user_balanceFRC, "poeur": user_balancePOEUR}
-
 
 # TRADES --------------------------
 @app.post("/trade")
@@ -88,6 +80,9 @@ def create_order(pair_id: int, trader_id: int, amount: int, price: int, buy: boo
         new_trade.create_order(pair_id, trader_id, amount, price, buy)
     except Exception as e:
         print(f"{e}")
+
+
+    
 
 
 # ACCEPT ORDER -------------------

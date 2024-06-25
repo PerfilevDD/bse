@@ -83,12 +83,16 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-def get_user(user_id: int):
-    if db.find_user_by_id(user_id):
-        return BSEUser(user_id)
+def get_user(user_id: int, db: Annotated[Database, Depends(get_database_object)]):
+    try:
+        user = BSEUser(db, user_id)
+        return user
+    except Exception as e:
+        print(e)
+        
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Database, Depends(get_database_object)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -102,15 +106,24 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = TokenData(user_id=user_id)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(user_id=token_data.user_id)
+    user = get_user(token_data.user_id, db)
     if user is None:
         raise credentials_exception
     return user
 
 
-@router.post('/test_balance')
-def test_balance(user_id: int, db: Annotated[Database, Depends(get_database_object)]):
-    user = BSEUser(db, user_id)
-    return user.get_balances()
+# BALANCE ---------------------
 
+@router.get("/balance")
+async def get_balance(current_user: Annotated[User, Depends(get_current_user)]):
+    user_balance = current_user.get_balances()
+    return {
+        "balances": [{
+            "balance": asset.balance,
+            "name": asset.name,
+            "ticker": asset.ticker,
+        } for asset in user_balance]}
+    
+def update_balance(change: int, db: Annotated[Database, Depends(get_database_object)]):
+    return
 
