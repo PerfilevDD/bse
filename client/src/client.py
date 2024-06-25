@@ -196,6 +196,7 @@ async def listen_for_updates():
                 data = json.loads(message)
                 
                 action = data["action"]
+                ws_order_id = data["order_id"]
                 ws_trader_id = data["trader_id"]
                 ws_item = data["item"]
                 ws_pair_item = data["pair_item"]
@@ -211,12 +212,17 @@ async def listen_for_updates():
                 listbox_entry = f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}"
                 order_str = f"Item: {ws_item}, Pair Item: {ws_pair_item}, Price: {ws_price}, Item Amount: {ws_item_amount}"
 
+
+                # this works, but remake with order_id
                 if action == "add":
+                    # 1. in current orders save the id's
+                    # and check, if exact this id was printed, if not, than pritn
+                    # so can we add more same orders in listbox
                     if order_str not in current_orders:
                         if ws_item == 'FRC':
-                            listbox_buy.insert(0, f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}" + "   " + f"{ws_trader_id},{ws_item},{ws_price},{ws_item_amount}")
+                            listbox_buy.insert(0, f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}" + "   " + f"{ws_order_id},{ws_trader_id},{ws_item},{ws_price},{ws_item_amount}")
                         elif ws_item == "POEUR":
-                            listbox_sell.insert(0, f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}" + "   " + f"{ws_trader_id},{ws_item},{ws_price},{ws_item_amount}")
+                            listbox_sell.insert(0, f"{ws_price}" + " "*len_spaces + f"{ws_item_amount}" + "   " + f"{ws_order_id},{ws_trader_id},{ws_item},{ws_price},{ws_item_amount}")
                             
                         current_orders.add(order_str)
                         
@@ -243,25 +249,26 @@ async def listen_for_updates():
             
 # ACCEPT ORDER
             
-def accept_order(item, type):
+def accept_order(item):
     string = item.get(item.curselection()[0])[25:]
     dataset = list(string.split(","))
     
-    trader_id = dataset[0]
-    type_dataset = dataset[1]
-    price = dataset[2]
-    amount = dataset[3]
+    order_id = dataset[0]
+    trader_id = dataset[1]
+    type_dataset = dataset[2]
+    price = dataset[3]
+    amount = dataset[4]
     
     
     try:
-        data = {'email': user_email, 'trader_id': trader_id, 'item': type_dataset, 'price': price, 'item_amount': amount}
+        data = {'email': user_email, 'order_id': order_id, 'trader_id': trader_id, 'item': type_dataset, 'price': price, 'item_amount': amount}
         r = requests.post(f"{url}/accept_order", json = data)
         r.raise_for_status()
         return r.json()
     except:
         messagebox.showinfo("", f"No Internet!")
     
-    print(f"{trader_id} {type_dataset} {price} {amount}")
+    print(f"{order_id} {trader_id} {type_dataset} {price} {amount}")
 
 
 def start_websocket():
@@ -358,7 +365,7 @@ def open_game_window():
     listbox_buy.config(font=("Courier", 14), width=22)
     listbox_buy.grid(row = 1, column = 0)
     
-    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_buy, 'POEUR'), width=32, height=2, bg="blue", fg="white").grid(column=0, row=2)
+    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_buy), width=32, height=2, bg="blue", fg="white").grid(column=0, row=2)
     
         
     
@@ -405,7 +412,7 @@ def open_game_window():
     listbox_sell.config(font=("Courier", 14), width=22)
     listbox_sell.grid(row = 1, column = 3)
     
-    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_buy, 'buy'), width=32, height=2, bg="blue", fg="white").grid(column=3, row=2)
+    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_sell), width=32, height=2, bg="blue", fg="white").grid(column=3, row=2)
     
     
     

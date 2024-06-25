@@ -17,6 +17,7 @@ class Order {
           int item_amount);
 
    private:
+    int order_id;
     Database& db;
     int trader_id;
     std::string item;
