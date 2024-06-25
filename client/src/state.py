@@ -1,7 +1,7 @@
 class WindowState:
     url = "http://localhost:8000"
     token = ''
-    user_id = 0;
+    user_id = 0
     user_email = ''
     balancePOEUR = 0
     currency = ""
