@@ -6,7 +6,7 @@
 namespace BSE {
     class Balance {
     public:
-        Balance(Database& database, int user_id, int asset_id);
+        Balance(Database &database, int user_id, int asset_id);
 
         inline static std::string create_table = "CREATE TABLE IF NOT EXISTS BALANCE("  \
               "user_id INT           NOT NULL," \
@@ -22,7 +22,7 @@ namespace BSE {
         int asset_id;
         int user_id;
 
-        Database& database;
+        Database &database;
     };
 
     struct BalanceAndAsset {

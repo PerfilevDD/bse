@@ -4,12 +4,14 @@
 #include <sqlpp11/sqlpp11.h>
 
 namespace BSE {
-    Balance::Balance(Database &database, int user_id, int asset_id) : database(database), user_id(user_id), asset_id(asset_id) {
-        auto& sqlppDb = *database.get_sqlpp11_db();
+    Balance::Balance(Database &database, int user_id, int asset_id) : database(database), user_id(user_id),
+                                                                      asset_id(asset_id) {
+        auto &sqlppDb = *database.get_sqlpp11_db();
         BalanceTable balanceTable;
 
-        auto results = sqlppDb(sqlpp::select(sqlpp::all_of(balanceTable)).from(balanceTable).where(balanceTable.asset_id == asset_id && balanceTable.user_id == user_id));
-        for (auto& db_balance: results){
+        auto results = sqlppDb(sqlpp::select(sqlpp::all_of(balanceTable)).from(balanceTable).where(
+                balanceTable.asset_id == asset_id && balanceTable.user_id == user_id));
+        for (auto &db_balance: results) {
             balance = db_balance.balance;
             return;
         }
@@ -21,7 +23,7 @@ namespace BSE {
                     balanceTable.asset_id = asset_id,
                     balanceTable.user_id = user_id,
                     balanceTable.balance = 0));
-        } catch (const sqlpp::exception& e) {
+        } catch (const sqlpp::exception &e) {
             throw std::exception();
         }
     }
@@ -30,10 +32,11 @@ namespace BSE {
         balance += change;
 
         // Update database
-        auto& sqlppDb = *database.get_sqlpp11_db();
+        auto &sqlppDb = *database.get_sqlpp11_db();
         BalanceTable balanceTable;
 
-        sqlppDb(sqlpp::update(balanceTable).set(balanceTable.balance = balance).where(balanceTable.asset_id == asset_id && balanceTable.user_id == user_id));
+        sqlppDb(sqlpp::update(balanceTable).set(balanceTable.balance = balance).where(
+                balanceTable.asset_id == asset_id && balanceTable.user_id == user_id));
 
 
     }

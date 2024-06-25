@@ -49,7 +49,7 @@ PYBIND11_MODULE(BSE, m) {
         .def(pybind11::init<Database&, int&>())
         .def(pybind11::init<Database&, std::string&, std::string&>())
         .def("check_password", &User::check_password)
-        .def("get_balance", &User::get_balance)
+        .def("get_balances", &User::get_balances)
         .def("get_user_id", &User::get_user_id)
         .def("update_balance", &User::update_balance);
 }
