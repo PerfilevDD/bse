@@ -103,6 +103,7 @@ file(GLOB SRC_FILES
         ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
         ${PROJECT_SOURCE_DIR}/src/order/*.cpp
         ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/database/*.cpp
         ${PROJECT_SOURCE_DIR}/src/user/*.cpp
 )
 
