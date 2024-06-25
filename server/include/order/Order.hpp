@@ -41,7 +41,8 @@ namespace BSE {
                 "amount INT NOT NULL,"
                 "fullfilled_amount INT NOT NULL,"
                 "completed BOOL NOT NULL DEFAULT FALSE,"
-                "buy BOOL NOT NULL);";
+                "buy BOOL NOT NULL,"
+                "completed_timestamp datetime DEFAULT NULL);";
 
         int get_price() const {
             return price;
