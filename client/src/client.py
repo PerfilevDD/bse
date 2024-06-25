@@ -8,6 +8,10 @@ import threading
 import json
 import jwt
 
+
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from ttkbootstrap import Style
 
 from PIL import Image, ImageTk
@@ -352,10 +356,18 @@ def open_game_window():
     
     
     # Balance
+    empty_label = ttk.Label(mainframe, text=f"     ")
+    empty_label.config(font=("Courier", 12))
+    empty_label.grid(column=4, row=0)
     
-    balanceFRC_label = ttk.Label(mainframe, text=f" "*36 + f"POEUR: {balancePOEUR}   |   FRC: {balanceFRC}")
-    balanceFRC_label.config(font=("Courier", 13))
-    balanceFRC_label.grid(column=1, row=0)
+    
+    balance_label = ttk.Label(mainframe, text=f"Your Balance")
+    balance_label.config(font=("Courier", 12))
+    balance_label.grid(column=5, row=0)
+    
+    listbox_balance = Listbox(mainframe) 
+    listbox_balance.config(font=("Courier", 14), width=22)
+    listbox_balance.grid(row = 1, column = 5)
     
 
     # BUY_______________________________
@@ -367,15 +379,13 @@ def open_game_window():
     
     # Scrollbox
     
-    legend_label = ttk.Label(mainframe, text=f"Price(POEUR)    Amount(FRC)")
+    legend_label = ttk.Label(mainframe, text=f"Price(POEUR)    Amount(--)")
     legend_label.config(font=("Courier", 12))
     legend_label.grid(column=0, row=0)
     
     listbox_buy = Listbox(mainframe) 
     listbox_buy.config(font=("Courier", 14), width=22)
     listbox_buy.grid(row = 1, column = 0)
-    
-    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_buy), width=32, height=2, bg="blue", fg="white").grid(column=0, row=2)
     
         
     
@@ -403,7 +413,7 @@ def open_game_window():
     entry_amount.grid(row=1, column=1, padx=20, pady=5)
     
     
-    Button(Buy, text=f"Sell FRC", command=lambda i=0: buy_func(feet_price, feet_amount),width=18, height=2,bg="red", fg="white").grid(column=1, row=2)
+    Button(Buy, text=f"BUY --", command=lambda i=0: buy_func(feet_price, feet_amount),width=18, height=2,bg="red", fg="white").grid(column=1, row=2)
     
     
     # SELL__________________________
@@ -414,7 +424,7 @@ def open_game_window():
     Sell.grid_rowconfigure(0, weight = 1)
     
     # Scrollbox
-    legend_label = ttk.Label(mainframe, text=f"Price(FRC)    Amount(POEUR)")
+    legend_label = ttk.Label(mainframe, text=f"Price(POEUR)    Amount(--)")
     legend_label.config(font=("Courier", 12))
     legend_label.grid(column=3, row=0)
     
@@ -422,7 +432,6 @@ def open_game_window():
     listbox_sell.config(font=("Courier", 14), width=22)
     listbox_sell.grid(row = 1, column = 3)
     
-    Button(mainframe, text=f"Accept", command=lambda: accept_order(listbox_sell), width=32, height=2, bg="blue", fg="white").grid(column=3, row=2)
     
     
     
@@ -450,10 +459,29 @@ def open_game_window():
     entry_amount.grid(row=1, column=2, padx=20, pady=5)
     
     
-    Button(Sell, text=f"Sell POEUR", command=lambda i=0: sell_func(feet_price_sell, feet_amount_sell), width=18, height=2,bg="green", fg="white").grid(column=2, row=2)
+    Button(Sell, text=f"SELL --", command=lambda i=0: sell_func(feet_price_sell, feet_amount_sell), width=18, height=2,bg="green", fg="white").grid(column=2, row=2)
     
     
     
+    # GRAPHIC
+    
+    
+    graphic = ttk.Frame(mainframe)
+    graphic.grid(row = 1, column = 6)
+    graphic.grid_columnconfigure((0,1), weight = 1)
+    graphic.grid_rowconfigure(0, weight = 1)
+    
+    frame = ttk.Frame(graphic)
+    frame.grid(column=6, row=1)
+    
+    frame.pack(fill=BOTH, expand=1)
+        
+    fig, ax = plt.subplots()
+    canvas = FigureCanvasTkAgg(fig, master=frame)
+    canvas.get_tk_widget().pack(fill=BOTH, expand=1)
+    
+     
+     
      
     
 
@@ -465,8 +493,27 @@ def open_game_window():
     entry_price.focus()
 
     root.mainloop()
+
+def update_graphic(graphic, canvas, ax):
     
+    database = []
+    price_data = [data['price'] for data in database]
+    time_data = [data['time'] for data in database]
+    
+    ax.clear()
+    
+    ax.plot(price_data, label='Price')
+    ax.plot(time_data, label='Time')
+    
+    ax.set_xlabel('Trade Index')
+    ax.set_ylabel('Price')
+    ax.set_title('Currency Price Chart')
+    ax.legend()
+    
+    canvas.draw()
+    
+    graphic.after(10000, update_graphic)
           
-#open_game_window()
+open_game_window()
             
-open_login_window()
+#open_login_window()
