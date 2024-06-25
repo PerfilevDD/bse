@@ -72,6 +72,6 @@ int User::get_balance() {
     return 0;
 }
 
-void User::update_balance(int change) {
+void User::update_balance(int change, int asset_id) {
 }
 }  // namespace BSE

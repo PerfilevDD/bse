@@ -83,7 +83,35 @@ namespace BSE {
             using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
 
+        struct FullfilledAmount {
+            struct _alias_t {
+                static constexpr const char _literal[] = "fullfilled_amount";
+                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+                template<typename T>
+                struct _member_t {
+                    T fullfilled_amount;
+                    T& operator()() { return fullfilled_amount; }
+                    const T& operator()() const { return fullfilled_amount; }
+                };
+            };
+            using _traits = sqlpp::make_traits<sqlpp::integer>;
+        };
 
+
+
+        struct Completed {
+            struct _alias_t {
+                static constexpr const char _literal[] = "completed";
+                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
+                template<typename T>
+                struct _member_t {
+                    T completed;
+                    T& operator()() { return completed; }
+                    const T& operator()() const { return completed; }
+                };
+            };
+            using _traits = sqlpp::make_traits<sqlpp::boolean>;
+        };
 
         struct Buy {
             struct _alias_t {
@@ -100,7 +128,7 @@ namespace BSE {
         };
     }
     
-    struct OrderTable : sqlpp::table_t<OrderTable, OrderTable_::Id, OrderTable_::Trader_id, OrderTable_::PairId, OrderTable_::Price, OrderTable_::Amount, OrderTable_::Buy> {
+    struct OrderTable : sqlpp::table_t<OrderTable, OrderTable_::Id, OrderTable_::Trader_id, OrderTable_::PairId, OrderTable_::Price, OrderTable_::Amount, OrderTable_::Buy, OrderTable_::Completed, OrderTable_::FullfilledAmount> {
         struct _alias_t {
             static constexpr const char _literal[] = "Order";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;

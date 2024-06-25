@@ -18,7 +18,7 @@ class User {
         return user_id;
     };
 
-    void update_balance(int change);
+    void update_balance(int change, int asset_id);
 
     std::string hash(std::string& password);
 

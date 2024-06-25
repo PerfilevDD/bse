@@ -12,12 +12,15 @@ namespace BSE {
 class TradePair {
    public:
     TradePair(int trade_pair_id);
-    TradePair(int asset_1_id, int asset_2_id);
+    //TradePair(int asset_1_id, int sset_2_id);
 
-    std::vector<Order> get_orders();
-    pybind11::list get_orders_as_python_list();
+    std::vector<Order> get_orders(int trade_pair_id, bool completed);
+    std::vector<Order> get_open_orders(int trade_pair_id){
+        return get_orders(trade_pair_id, false);
+    };
+    pybind11::list get_orders_as_python_list(int trade_pair_id);
 
-    void create_order(int trader_id, int amount, int price, bool buy);
+    void create_order(int pair_id, int trader_id, int amount, int price, bool buy);
     inline static std::string create_table =
         "CREATE TABLE IF NOT EXISTS TRADEPAIR("
         "id INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -25,9 +28,9 @@ class TradePair {
         "price_asset TEXT NOT NULL);";
 
    private:
-    int id;
+    int id{};
     Database db;
-    int supply_good_1 = 0;
-    int supply_good_2 = 0;
+    int price_asset{};
+    int base_asset{};
 };
 }  // namespace BSE

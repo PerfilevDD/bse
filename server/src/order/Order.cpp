@@ -19,7 +19,9 @@ Order::Order(Database& Database,
                                 pair_id(pair_id),
                                 price(price),
                                 amount(amount),
-                                buy(buy){
+                                buy(buy),
+                                fullfilled_amount(0),
+                                completed(false){
     auto& sqlppDb = *db.get_sqlpp11_db();
 
     OrderTable orderTable;
@@ -30,6 +32,8 @@ Order::Order(Database& Database,
             orderTable.price = price,
             orderTable.amount = amount,
             orderTable.pair_id = pair_id,
+            orderTable.completed = false,
+            orderTable.fullfilled_amount = 0,
             orderTable.buy = buy));
     } catch (const sqlpp::exception& e) {
         std::cerr << e.what() << std::endl;
@@ -43,12 +47,13 @@ Order::Order(BSE::Database &Database, int order_id): db(Database), order_id(orde
 
         try {
             for (const auto& row : sqlppDb(sqlpp::select(all_of(orderTable)).from(orderTable).where(orderTable.id == order_id))) {
-                order_id = row.id;
                 trader_id = row.trader_id;
                 price = row.price;
                 pair_id = row.pair_id;
                 buy = row.buy;
                 amount = row.amount;
+                completed = row.completed;
+                fullfilled_amount = row.fullfilled_amount;
                 return;
             }
         } catch (const sqlpp::exception& e) {
@@ -59,17 +64,21 @@ Order::Order(BSE::Database &Database, int order_id): db(Database), order_id(orde
 
 }
 
-    Order::Order(Database &Database,
+    Order::Order(Database& Database,
                  int trader_id,
                  int pair_id,
                  int price,
                  int amount,
-                 bool buy,
-                 bool insert) :     db(Database),
+                 int fullfilled_amount,
+                 bool completed,
+                 bool buy) :     db(Database),
                                     trader_id(trader_id),
                                     pair_id(pair_id),
                                     price(price),
                                     amount(amount),
-                                    buy(buy) {}
+                                    buy(buy),
+                                    completed(completed),
+                                    fullfilled_amount(fullfilled_amount)
+                {}
 
 }  // namespace BSE
