@@ -7,7 +7,6 @@ import jwt
 from starlette import status
 
 from dependencies import get_database_object
-from models.models import User, Token, TokenData
 
 from jwt.exceptions import InvalidTokenError
 
