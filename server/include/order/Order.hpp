@@ -43,19 +43,19 @@ namespace BSE {
                 "completed BOOL NOT NULL DEFAULT FALSE,"
                 "buy BOOL NOT NULL);";
 
-        int get_price() {
+        int get_price() const {
             return price;
         }
 
-        int get_amount() {
+        int get_amount() const {
             return amount;
         }
 
-        int get_fullfilled_amount() {
+        int get_fullfilled_amount() const {
             return fullfilled_amount;
         }
 
-        int get_trader_id() {
+        int get_trader_id() const {
             return trader_id;
         }
 
@@ -67,13 +67,9 @@ namespace BSE {
             return buy;
         }
 
-        void set_completed(bool c) {
-            completed = c;
-        }
+        void set_completed(bool c);
 
-        void set_fullfilled_amount(int new_fullfilled_amount) {
-            fullfilled_amount = new_fullfilled_amount;
-        }
+        void set_fullfilled_amount(int new_fullfilled_amount);
 
 
     private:

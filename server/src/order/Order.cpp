@@ -81,4 +81,22 @@ namespace BSE {
                              completed(completed),
                              fullfilled_amount(fullfilled_amount) {}
 
+    void Order::set_completed(bool c) {
+        auto &sqlpp11 = *db.get_sqlpp11_db();
+        OrderTable orderTable;
+
+        sqlpp11(sqlpp::update(orderTable).set(orderTable.completed = c).where(orderTable.id == order_id));
+        completed = c;
+    }
+
+    void Order::set_fullfilled_amount(int new_fullfilled_amount) {
+        auto &sqlpp11 = *db.get_sqlpp11_db();
+        OrderTable orderTable;
+
+        sqlpp11(sqlpp::update(orderTable).set(orderTable.fullfilled_amount = new_fullfilled_amount).where(
+                orderTable.id == order_id));
+        fullfilled_amount = new_fullfilled_amount;
+
+    }
+
 }  // namespace BSE
