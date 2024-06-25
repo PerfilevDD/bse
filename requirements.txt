@@ -8,3 +8,5 @@ uvicorn
 pysqlite3
 requests
 pillow
+pyjwt
+passlib

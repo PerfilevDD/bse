@@ -91,45 +91,21 @@ FetchContent_MakeAvailable(sqlpp11)
 
 
 #----------------------------------------------#
-#-----------------Add Matplot++----------------#
-#----------------------------------------------#
-FetchContent_Declare(matplotplusplus
-        GIT_REPOSITORY https://github.com/alandefreitas/matplotplusplus
-        GIT_TAG origin/master)
-
-FetchContent_GetProperties(matplotplusplus)
-if(NOT matplotplusplus_POPULATED)
-  FetchContent_Populate(matplotplusplus)
-  add_subdirectory(${matplotplusplus_SOURCE_DIR} ${matplotplusplus_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
-
-
-
-#----------------------------------------------#
 #---------------Erzeuge Projekt----------------#
 #----------------------------------------------#
-
-# Legt die Variable SRC_FILES an, die alle
-# .cpp-Dateien des Projekts benennt,
-# die in Verzeichnis src/ liegen.
-file(GLOB SRC_FILES
-  ${PROJECT_SOURCE_DIR}/src/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/db/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/order/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/user/*.cpp
-        )
 
 
 # Baue das Programm '---' aus den Quellen
 file(GLOB SRC_FILES
-${PROJECT_SOURCE_DIR}/src/*.cpp
-${PROJECT_SOURCE_DIR}/src/db/*.cpp
-${PROJECT_SOURCE_DIR}/src/asset/*.cpp
-${PROJECT_SOURCE_DIR}/src/marketplace/*.cpp
-${PROJECT_SOURCE_DIR}/src/order/*.cpp
-${PROJECT_SOURCE_DIR}/src/user/*.cpp)
+        ${PROJECT_SOURCE_DIR}/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/db/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/order/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/database/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/user/*.cpp
+)
 
 
 pybind11_add_module(BSE
@@ -143,8 +119,7 @@ install(TARGETS BSE
   LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/extra)
 
 
-
-target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3)
+target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3 ${PYTHON_LIBRARIES})
 
 
 
@@ -152,13 +127,4 @@ target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3)
 #-------------Erzeuge Testprogramme------------#
 #----------------------------------------------#
 
-file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-add_executable(test_database tests/test_database.cpp ${SRC_FILES}
-        src/db/sqlite.cpp
-        src/user/User.cpp)
-target_link_libraries(test_database GTest::gtest_main)
-target_link_libraries(test_database sqlite3)
-target_link_libraries(test_database sqlpp11)
-
 #add_executable(main src/main.cpp)
-#target_link_libraries(main PUBLIC matplot)

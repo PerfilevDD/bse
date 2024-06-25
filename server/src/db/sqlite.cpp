@@ -4,8 +4,8 @@
 
 #include "asset/Asset.hpp"
 #include "exception"
-#include "marketplace/Marketplace.hpp"
-#include "marketplace/marketplace_table.hpp"
+#include "tradePair/TradePair.hpp"
+#include "order/order_table.hpp"
 #include "string"
 #include "user/User.hpp"
 
@@ -17,7 +17,7 @@ Database::Database() {
 
     sqlpp_db = std::make_shared<sql::connection>(sql::connection(config));
     sqlpp_db->execute(User::create_table);
-    sqlpp_db->execute(Marketplace::create_table);
+    sqlpp_db->execute(TradePair::create_table);
     sqlpp_db->execute(Asset::create_table);
 }
 /*
@@ -101,53 +101,6 @@ void Database::update_user_balance_frc(std::string& email, int amount) {
     } catch (const sqlpp::exception& e) {
         std::cerr << e.what() << std::endl;
     }
-}
-
-// ORDERS
-OrderDB Database::give_order_by_id(int id) {
-    auto& sqlppDb = *sqlpp_db;
-
-    MarketplaceTable marketplaceTable;
-
-    try {
-        for (const auto& row : sqlppDb(sqlpp::select(all_of(marketplaceTable)).from(marketplaceTable).where(marketplaceTable.id == id))) {
-            OrderDB order;
-            order.id = row.id;
-            order.trader_id = row.trader_id;
-            order.item = row.item;
-            order.pair_item = row.pair_item;
-            order.price = row.price;
-            order.item_amount = row.item_amount;
-            return order;
-        }
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-
-    return OrderDB{};
-}
-
-std::vector<OrderDB> Database::get_all_orders() {
-    auto& sqlppDb = *sqlpp_db;
-    MarketplaceTable marketplaceTable;
-    std::vector<OrderDB> orders;
-
-    try {
-        for (const auto& row : sqlppDb(sqlpp::select(all_of(marketplaceTable)).from(marketplaceTable).unconditionally())) {
-            OrderDB order;
-            order.id = row.id;
-            order.trader_id = row.trader_id;
-            order.item = row.item;
-            order.pair_item = row.pair_item;
-            order.price = row.price;
-            order.item_amount = row.item_amount;
-            orders.push_back(order);
-        }
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-
-    return orders;
 }
 
 Database::~Database() {
