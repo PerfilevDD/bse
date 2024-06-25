@@ -6,10 +6,12 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+    user_id: int
 
 class User(BaseModel):
-    email: str
+    email: str 
     password: str
+
 
 class Order(BaseModel):
     trader_id: int

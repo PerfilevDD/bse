@@ -20,18 +20,18 @@ Database::Database() {
     sqlpp_db->execute(TradePair::create_table);
     sqlpp_db->execute(Asset::create_table);
 }
-/*
-bool Database::find_user_by_email(std::string& email) {
-    auto& sqlppDb = *sqlpp_db;
 
-    UserTable userTable;
+std::vector<OrderDB> Database::get_all_orders(){
+    std::vector<OrderDB> tmp_vec; // pybind requests return value
+    return tmp_vec;
+}
 
-    try {
-        sqlppDb(sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email));
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-}*/
+
+
+struct OrderDB Database::give_order_by_id(int id){
+    OrderDB tmp_str; // pybind requests return value
+    return tmp_str;
+}
 
 // USER
 

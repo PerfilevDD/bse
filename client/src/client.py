@@ -190,7 +190,9 @@ async def listen_for_updates():
     print("Connecting")
     async with websockets.connect(ws_url) as websocket:
         print("Connected")
+        await websocket.send(json.dumps({"action": "register", "user_id": user_id}))
         while True:
+            
             try:
                 message = await websocket.recv()
                 data = json.loads(message)
@@ -202,6 +204,14 @@ async def listen_for_updates():
                 ws_pair_item = data["pair_item"]
                 ws_price = data["price"]
                 ws_item_amount = data["item_amount"]
+                
+                
+                # update balance
+                if data["action"] == "update_balance":
+                    new_balance = data["balance"]
+                    print(f"New balance for user {user_id}: {new_balance}")
+                
+                # update orders
                 
                 # calculate space between two parms
                 # 21 is length of listbox
