@@ -33,7 +33,7 @@ namespace BSE {
               int order_id);
 
         inline static std::string create_table =
-                "CREATE TABLE IF NOT EXISTS ORDER("
+                "CREATE TABLE IF NOT EXISTS TRADE("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 "trader_id INT NOT NULL,"
                 "pair_id INT NOT NULL,"

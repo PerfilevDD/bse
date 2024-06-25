@@ -24,6 +24,7 @@ namespace BSE {
 
         ~Database();
 
+
         std::shared_ptr<sql::connection> get_sqlpp11_db() {
             return sqlpp_db;
         }

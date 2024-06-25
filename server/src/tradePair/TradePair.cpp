@@ -111,12 +111,51 @@ namespace BSE {
         return orders;
     }
 
-    TradePair::TradePair(int trade_pair_id) {
+    TradePair::TradePair(Database &db, int trade_pair_id) : trade_pair_id(trade_pair_id), db(db) {
+        TradePairTable tradePairTable;
 
+        auto &sqlpp11 = *db.get_sqlpp11_db();
+
+        auto results = sqlpp11(sqlpp::select(sqlpp::all_of(tradePairTable)).from(tradePairTable).where(
+                tradePairTable.id == trade_pair_id));
+        for (auto &trade_pair: results) {
+            price_asset = trade_pair.price_asset;
+            base_asset = trade_pair.base_asset;
+            return;
+        }
+
+        throw std::exception();
     }
+
+    TradePair::TradePair(Database &db, int trade_pair_id, int base_asset_id, int price_asset_id) : trade_pair_id(
+            trade_pair_id),
+                                                                                                   price_asset(
+                                                                                                           price_asset_id),
+                                                                                                   base_asset(
+                                                                                                           base_asset_id),
+                                                                                                   db(db) {
+    }
+
 
     pybind11::list TradePair::get_orders_as_python_list(int trade_pair_id) {
         pybind11::list orders_list = pybind11::cast(get_open_orders(trade_pair_id));
         return orders_list;
+    }
+
+    static std::vector<TradePair> get_all_trade_pairs(Database &db) {
+        auto &sqlpp11 = *db.get_sqlpp11_db();
+
+        std::vector<TradePair> trade_pair_vec;
+
+        TradePairTable tradePairTable;
+
+        auto results = sqlpp11(sqlpp::select(sqlpp::all_of(tradePairTable)).from(tradePairTable).unconditionally());
+
+        for (auto &trade_pair: results) {
+            trade_pair_vec.push_back(TradePair(db, trade_pair.id, trade_pair.base_asset, trade_pair.price_asset));
+        }
+        return trade_pair_vec;
+
+
     }
 }

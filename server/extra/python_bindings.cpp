@@ -34,10 +34,12 @@ PYBIND11_MODULE(BSE, m) {
             .def(pybind11::init<int>());
 
     pybind11::class_<TradePair>(m, "TradePair")
-            .def(pybind11::init<int>())
+            .def(pybind11::init<Database &, int>())
+            .def(pybind11::init<Database &, int, int, int>())
             .def("get_orders", &TradePair::get_orders)
             .def("get_open_orders", &TradePair::get_open_orders)
             .def("get_orders_as_python_list", &TradePair::get_orders_as_python_list)
+            .def("get_all_trade_pairs", &TradePair::get_all_trade_pairs)
             .def("create_order", &TradePair::create_order);
 
     pybind11::class_<User>(m, "User")

@@ -6,14 +6,16 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-
+#include "tradePair/trade_pair_table.hpp"
 #include "order/Order.hpp"
 
 namespace BSE {
     class TradePair {
     public:
         // Constructors
-        TradePair(int trade_pair_id);
+        TradePair(Database &db, int trade_pair_id);
+
+        TradePair(Database &db, int trade_pair_id, int base_asset_id, int price_asset_id);
 
         //TradePair(int asset_1_id, int sset_2_id);
         inline static std::string create_table =
@@ -34,10 +36,12 @@ namespace BSE {
 
         pybind11::list get_orders_as_python_list(int trade_pair_id);
 
+        static std::vector<TradePair> get_all_trade_pairs(Database db);
+
     private:
-        int id{};
         Database db;
-        int price_asset{};
-        int base_asset{};
+        int trade_pair_id;
+        int price_asset;
+        int base_asset;
     };
 }  // namespace BSE
