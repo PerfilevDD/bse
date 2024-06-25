@@ -37,7 +37,20 @@ namespace BSE {
 
         pybind11::list get_orders_as_python_list(int trade_pair_id);
 
-        static std::vector<TradePair> get_all_trade_pairs(Database& db);
+        static std::vector<TradePair> get_all_trade_pairs(Database &db);
+
+        int get_base_asset() {
+            return base_asset;
+        }
+
+        int get_price_asset() {
+            return price_asset;
+        }
+
+        int get_trade_pair_id() {
+            return trade_pair_id;
+        }
+
 
     private:
         Database db;

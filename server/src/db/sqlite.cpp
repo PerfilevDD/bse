@@ -28,18 +28,5 @@ namespace BSE {
     Database::~Database() {
     }
 
-    std::vector<Asset> Database::get_assets() {
-        std::vector<Asset> asset_vec;
-
-        AssetTable assetTable;
-        auto &sqlpp11 = *get_sqlpp11_db();
-
-        auto results = sqlpp11(sqlpp::select(sqlpp::all_of(assetTable)).from(assetTable).unconditionally());
-
-        for (auto &asset: results) {
-            asset_vec.push_back(Asset(asset.id, asset.name, asset.ticker));
-        }
-        return asset_vec;
-    }
 
 }  // namespace BSE

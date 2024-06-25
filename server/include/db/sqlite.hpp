@@ -4,7 +4,6 @@
 #include <sqlpp11/sqlite3/connection.h>
 
 #include "vector"
-#include "asset/Asset.hpp"
 
 namespace BSE {
     namespace sql = sqlpp::sqlite3;
@@ -28,8 +27,6 @@ namespace BSE {
         std::shared_ptr<sql::connection> get_sqlpp11_db() {
             return sqlpp_db;
         }
-
-        std::vector<Asset> get_assets();
 
 
     private:
