@@ -15,14 +15,14 @@ using namespace BSE;
 PYBIND11_MODULE(BSE, m) {
     m.doc() = "BSE";
 
-    pybind11::register_exception<std::invalid_argument>(m, "PyExp");
-    pybind11::register_exception<std::exception>(m, "PyExp");
-    pybind11::register_exception<std::bad_alloc>(m, "PyExp");
-    pybind11::register_exception<std::domain_error>(m, "PyExp");
-    pybind11::register_exception<std::length_error>(m, "PyExp");
-    pybind11::register_exception<std::out_of_range>(m, "PyExp");
-    pybind11::register_exception<std::range_error>(m, "PyExp");
-    pybind11::register_exception<std::overflow_error>(m, "PyExp");
+    pybind11::register_exception<std::invalid_argument>(m, "invalid_argument");
+    pybind11::register_exception<std::exception>(m, "exception");
+    pybind11::register_exception<std::bad_alloc>(m, "bad_alloc");
+    pybind11::register_exception<std::domain_error>(m, "domain_error");
+    pybind11::register_exception<std::length_error>(m, "length_error");
+    pybind11::register_exception<std::out_of_range>(m, "out_of_range");
+    pybind11::register_exception<std::range_error>(m, "range_error");
+    pybind11::register_exception<std::overflow_error>(m, "overflow_error");
 
     pybind11::class_<Order>(m, "Order")
             .def(pybind11::init<Database &, int, int, int, int, bool>());
@@ -49,7 +49,7 @@ PYBIND11_MODULE(BSE, m) {
             .def("get_orders", &TradePair::get_orders)
             .def("get_open_orders", &TradePair::get_open_orders)
             .def("get_orders_as_python_list", &TradePair::get_orders_as_python_list)
-            .def("get_all_trade_pairs", &TradePair::get_all_trade_pairs)
+            .def_static("get_all_trade_pairs", &TradePair::get_all_trade_pairs)
             .def("create_order", &TradePair::create_order);
 
     pybind11::class_<User>(m, "User")

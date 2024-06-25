@@ -5,6 +5,7 @@
 #include "list"
 #include "user/User.hpp"
 
+
 #include <algorithm>
 
 namespace BSE {
@@ -142,7 +143,7 @@ namespace BSE {
         return orders_list;
     }
 
-    static std::vector<TradePair> get_all_trade_pairs(Database &db) {
+    std::vector<TradePair> TradePair::get_all_trade_pairs(Database &db) {
         auto &sqlpp11 = *db.get_sqlpp11_db();
 
         std::vector<TradePair> trade_pair_vec;

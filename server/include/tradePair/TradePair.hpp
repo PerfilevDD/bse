@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "sqlite3.h"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -12,7 +13,7 @@
 namespace BSE {
     class TradePair {
     public:
-        // Constructors
+        // Constructorsget_all_trade_pairs
         TradePair(Database &db, int trade_pair_id);
 
         TradePair(Database &db, int trade_pair_id, int base_asset_id, int price_asset_id);
@@ -36,7 +37,7 @@ namespace BSE {
 
         pybind11::list get_orders_as_python_list(int trade_pair_id);
 
-        static std::vector<TradePair> get_all_trade_pairs(Database db);
+        static std::vector<TradePair> get_all_trade_pairs(Database& db);
 
     private:
         Database db;
