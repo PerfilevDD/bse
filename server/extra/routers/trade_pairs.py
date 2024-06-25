@@ -7,11 +7,12 @@ import jwt
 from starlette import status
 
 from dependencies import get_database_object
-from models.models import User, Token, TokenData
 
 from jwt.exceptions import InvalidTokenError
 
 from BSE import User as BSEUser, Database, TradePair
+from routers.users import get_current_user
+from models.models import Trade, User
 
 db = Database()
 
@@ -26,7 +27,6 @@ def new_trade_pairs(base_asset_id: int, price_asset_id: int, db: Annotated[Datab
     new_item.create_order(1, 1, 1, 1, 1)
     return {"status": "complete"}
 
-    return
 
 
 @router.get("/trade-pairs")
@@ -53,3 +53,22 @@ def get_trade_pair(pair_id: int, db: Annotated[Database, Depends(get_database_ob
         "base_asset": trade_pair.get_base_asset(),
         "price_asset": trade_pair.get_price_asset(),
     }
+    
+    
+@router.post("/trade/create")
+async def create_trade(trade: Trade, db: Annotated[Database, Depends(get_database_object)],
+                       current_user: Annotated[User, Depends(get_current_user)]):
+    try:
+        new_trade = TradePair(db, trade.trade_pair_id)
+        
+        new_trade.create_order(new_trade.get_trade_pair_id(), current_user.get_user_id(), trade.amount, trade.price, trade.buy)
+        return {"status": "complete"}
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Trading Pair can not be created")
+    
+@router.get("/trade/all")
+async def get_orders(trade_pair_id: int):
+    trade_pairs = TradePair.get_orders_as_python_list(trade_pair_id)
+    print(trade_pairs)
+    

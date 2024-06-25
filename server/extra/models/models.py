@@ -28,3 +28,10 @@ class OrderToAccept(BaseModel):
     item: str
     price: int
     item_amount: int
+
+class Trade(BaseModel):
+    trade_pair_id: int 
+    amount: int
+    price: int
+    buy: bool 
+    
