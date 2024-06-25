@@ -138,6 +138,26 @@ namespace BSE {
     }
 
 
+    TradePair::TradePair(Database &db, int base_asset_id, int price_asset_id) : price_asset( price_asset_id), base_asset(base_asset_id),
+                                                                                                   db(db) {
+
+            
+        auto &sqlppDb = *db.get_sqlpp11_db();
+
+        TradePairTable tradePairTable;
+
+        try {
+            sqlppDb(sqlpp::insert_into(tradePairTable).set(
+                    tradePairTable.base_asset = base_asset_id,
+                    tradePairTable.price_asset = price_asset_id));
+        } catch (const sqlpp::exception &e) {
+            std::cerr << e.what() << std::endl;
+        }
+
+
+    }
+
+
     pybind11::list TradePair::get_orders_as_python_list(int trade_pair_id) {
         pybind11::list orders_list = pybind11::cast(get_open_orders(trade_pair_id));
         return orders_list;

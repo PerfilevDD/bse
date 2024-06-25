@@ -11,7 +11,7 @@ from models.models import User, Token, TokenData
 
 from jwt.exceptions import InvalidTokenError
 
-from BSE import User as BSEUser, Database, Asset
+from BSE import User as BSEUser, Database, Asset as BSEAsset
 
 db = Database()
 
@@ -19,10 +19,15 @@ router = APIRouter(
     tags=["Assets"]
 )
 
+@router.post("/assets")
+def new_assets(name: str, ticker: str, db: Annotated[Database, Depends(get_database_object)]):
+    BSEAsset(db, name, ticker)
+    return {"status": "complete"}
+
 
 @router.get("/assets")
 def get_assets(db: Annotated[Database, Depends(get_database_object)]):
-    trade_pairs = Asset.get_all_assets(db)
+    trade_pairs = BSEAsset.get_all_assets(db)
     return {
         "assets": [{
             "asset_id": t.get_asset_id(),

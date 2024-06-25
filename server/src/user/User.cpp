@@ -40,11 +40,18 @@ namespace BSE {
 
         UserTable userTable;
 
-        for (const auto &row: sqlppDb(
-                sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email))) {
-                    return;
+        auto results = sqlppDb(
+            sqlpp::select(all_of(userTable))
+            .from(userTable)
+            .where(userTable.email == email));
+
+        if (results.empty()) {
+            throw std::invalid_argument("User not found");
         }
-        throw std::invalid_argument("User not found");
+
+        auto &result = results.front();
+        user_id = result.id;
+        password_hash = result.password;
     }
 
     User::User(Database &database, std::string &email, std::string &password)

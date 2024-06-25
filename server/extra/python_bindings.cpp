@@ -42,6 +42,8 @@ PYBIND11_MODULE(BSE, m) {
 
     pybind11::class_<Asset>(m, "Asset")
             .def(pybind11::init<int>())
+            .def(pybind11::init<int, std::string &, std::string &>())
+            .def(pybind11::init<Database &, std::string &, std::string &>())
             .def_static("get_all_assets", &Asset::get_all_assets)
             .def("get_asset_id", &Asset::get_asset_id)
             .def("get_asset_ticker", &Asset::get_asset_ticker)
@@ -50,6 +52,7 @@ PYBIND11_MODULE(BSE, m) {
 
     pybind11::class_<TradePair>(m, "TradePair")
             .def(pybind11::init<Database &, int>())
+            .def(pybind11::init<Database &, int, int>())
             .def(pybind11::init<Database &, int, int, int>())
             .def("get_orders", &TradePair::get_orders)
             .def("get_open_orders", &TradePair::get_open_orders)

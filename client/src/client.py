@@ -19,8 +19,9 @@ url = "http://localhost:8000"
 token = ''
 user_id = 0;
 user_email = ''
-balancePOEUR = 0;
-balanceFRC = 0;
+balancePOEUR = 0
+currency = ""
+currency_balance = 0
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
 
@@ -114,7 +115,7 @@ def login():
         
         user_id=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["user_id"]
         user_email=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["sub"]
-        get_user_balance(user_email)
+        #get_user_balance(user_email)
         
         login_window.destroy()
         open_game_window()
@@ -171,7 +172,7 @@ def registrarion():
         
             user_id=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["user_id"]
             user_email=jwt.decode(token, SECRET_KEY, algorithms=["HS256"])["sub"]
-            get_user_balance(user_email)
+            #get_user_balance(user_email)
         
             login_window.destroy()
             open_game_window()
@@ -336,9 +337,14 @@ def sell_func(feet_price, feet_amount):
         return None  
     
 
+# CURRENCY
+
+def update_currency():
+    
+
     
 def open_game_window():
-    global root, entry_price, entry_amount, listbox_buy, listbox_sell
+    global root, entry_price, entry_amount, listbox_buy, listbox_sell, listbox_balance
     
     # Main window
     root = Tk()
@@ -356,12 +362,13 @@ def open_game_window():
     
     
     # Balance
+    
     empty_label = ttk.Label(mainframe, text=f"     ")
     empty_label.config(font=("Courier", 12))
     empty_label.grid(column=4, row=0)
     
     
-    balance_label = ttk.Label(mainframe, text=f"Your Balance")
+    balance_label = ttk.Label(mainframe, text=f"Currency / Your Balance")
     balance_label.config(font=("Courier", 12))
     balance_label.grid(column=5, row=0)
     
