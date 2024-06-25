@@ -8,102 +8,38 @@
 #include "order/order_table.hpp"
 #include "string"
 #include "user/User.hpp"
+#include "asset/asset_table.hpp"
 
 namespace BSE {
-Database::Database() {
-    config = std::make_shared<sql::connection_config>();
-    config->path_to_database = "bonn_stock_exchange.sqlite3";
-    config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+    Database::Database() {
+        config = std::make_shared<sql::connection_config>();
+        config->path_to_database = "bonn_stock_exchange.sqlite3";
+        config->flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
 
-    sqlpp_db = std::make_shared<sql::connection>(sql::connection(config));
-    sqlpp_db->execute(User::create_table);
-    sqlpp_db->execute(TradePair::create_table);
-    sqlpp_db->execute(Asset::create_table);
-}
-
-std::vector<OrderDB> Database::get_all_orders(){
-    std::vector<OrderDB> tmp_vec; // pybind requests return value
-    return tmp_vec;
-}
+        sqlpp_db = std::make_shared<sql::connection>(sql::connection(config));
+        sqlpp_db->execute(User::create_table);
+        sqlpp_db->execute(TradePair::create_table);
+        sqlpp_db->execute(Asset::create_table);
+        sqlpp_db->execute(Balance::create_table);
+        sqlpp_db->execute(Order::create_table);
+    }
 
 
+    Database::~Database() {
+    }
 
-struct OrderDB Database::give_order_by_id(int id){
-    OrderDB tmp_str; // pybind requests return value
-    return tmp_str;
-}
+    std::vector<Asset> Database::get_assets() {
+        std::vector<Asset> asset_vec;
 
-// USER
+        AssetTable assetTable;
+        auto &sqlpp11 = *get_sqlpp11_db();
 
-int Database::find_user_by_email(std::string& email) {
-    auto& sqlppDb = *sqlpp_db;
+        auto results = sqlpp11(sqlpp::select(sqlpp::all_of(assetTable)).from(assetTable).unconditionally());
 
-    UserTable userTable;
-
-    try {
-        for (const auto& row : sqlppDb(sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email))) {
-            return row.id;
+        for (auto &asset: results) {
+            asset_vec.push_back(Asset(asset.id, asset.name, asset.ticker));
         }
-        return 0;
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
+        return asset_vec;
     }
-}
-
-// BALANCE USER
-int Database::get_user_balance_frc(std::string& email) {
-    auto& sqlppDb = *sqlpp_db;
-
-    UserTable userTable;
-
-    try {
-        for (const auto& row : sqlppDb(sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email))) {
-            return row.balanceFRC;
-        }
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-}
-
-int Database::get_user_balance_poeur(std::string& email) {
-    auto& sqlppDb = *sqlpp_db;
-
-    UserTable userTable;
-
-    try {
-        for (const auto& row : sqlppDb(sqlpp::select(all_of(userTable)).from(userTable).where(userTable.email == email))) {
-            return row.balancePOEUR;
-        }
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-}
-
-void Database::update_user_balance_poeur(std::string& email, int amount) {
-    auto& sqlppDb = *sqlpp_db;
-
-    UserTable userTable;
-
-    try {
-        sqlppDb(sqlpp::update(userTable).set(userTable.balancePOEUR += amount).where(userTable.email == email));
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-}
-
-void Database::update_user_balance_frc(std::string& email, int amount) {
-    auto& sqlppDb = *sqlpp_db;
-
-    UserTable userTable;
-
-    try {
-        sqlppDb(sqlpp::update(userTable).set(userTable.balanceFRC += amount).where(userTable.email == email));
-    } catch (const sqlpp::exception& e) {
-        std::cerr << e.what() << std::endl;
-    }
-}
-
-Database::~Database() {
-}
 
 }  // namespace BSE

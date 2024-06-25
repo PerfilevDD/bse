@@ -8,6 +8,8 @@ namespace BSE {
         // Constructors
         Asset(int asset_id);
 
+        Asset(int asset_id, std::string name, std::string ticker);
+
         inline static std::string create_table = "CREATE TABLE IF NOT EXISTS ASSET("  \
               "id INT PRIMARY KEY           NOT NULL," \
               "name          CHAR(50)       NOT NULL," \
