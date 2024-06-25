@@ -10,7 +10,9 @@ namespace BSE {
         // Constructors
         Asset(int asset_id);
 
-        Asset(int asset_id, std::string name, std::string ticker);
+        Asset(int asset_id, const std::string& name, const std::string& ticker);
+
+        Asset(Database &database, const std::string& name, const std::string& ticker);
 
         inline static std::string create_table = 
               "CREATE TABLE IF NOT EXISTS ASSET("  \
@@ -36,6 +38,7 @@ namespace BSE {
 
 
     private:
+        Database &db;
         std::string name;
         std::string ticker;
         int asset_id;

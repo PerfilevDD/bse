@@ -16,6 +16,8 @@ namespace BSE {
         // Constructorsget_all_trade_pairs
         TradePair(Database &db, int trade_pair_id);
 
+        TradePair(Database &db, int base_asset_id, int price_asset_id);
+
         TradePair(Database &db, int trade_pair_id, int base_asset_id, int price_asset_id);
 
         //TradePair(int asset_1_id, int sset_2_id);

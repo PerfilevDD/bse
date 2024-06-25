@@ -11,7 +11,7 @@ from models.models import User, Token, TokenData
 
 from jwt.exceptions import InvalidTokenError
 
-from BSE import User as BSEUser, Database
+from BSE import User as BSEUser, Database, Balance
 
 router = APIRouter(
     tags=["Authentication"]
@@ -26,22 +26,14 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.post("/token")
-async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token:
-    user_id, error = authenticate_user(form_data.username, form_data.password)
-
-    if not user_id and error != 'not reg':
+async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: Annotated[Database, Depends(get_database_object)]) -> Token:
+    user_id = authenticate_user(form_data.username, form_data.password, db)
+    if not user_id:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    elif not user_id and error == 'not reg':
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="user in nor register",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": form_data.username, "user_id": user_id}, expires_delta=access_token_expires
@@ -55,9 +47,8 @@ async def register_user(user: User, db: Annotated[Database, Depends(get_database
         user = BSEUser(db, user.email)
         return {"status": "user is already reg"}
     except Exception as e:
-        if e == "User not found":
-            create_user(db, user.email, user.password)
-            return {"status": "reg complete"}
+        create_user(db, user.email, user.password)
+        return {"status": "reg complete"}
 
 
 def create_user(db, email: str, password: str):
@@ -67,21 +58,18 @@ def create_user(db, email: str, password: str):
         print(f"{e}")
 
 
-def authenticate_user(email: str, password: str):
-    user_id = db.find_user_by_email(email)
-    error = ''
-    if not user_id:
-        error = 'not reg'
-        return False, error
-    if not verify_password(user_id, password):
-        error = 'false pass'
-        return False, error
-    return user_id, error
+def authenticate_user(email: str, password: str, db: Database):
+    try:
+        user = BSEUser(db, email)
+        print(user.get_user_id())
+        if(user.check_password(password)):
+            user_id = user.get_user_id()
+            return user_id
+    except Exception as e:
+        print(e)
+        return
 
 
-def verify_password(user_id, password):
-    user = BSEUser(db, user_id)
-    return user.check_password(password)
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -95,12 +83,16 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 
-def get_user(user_id: int):
-    if db.find_user_by_id(user_id):
-        return BSEUser(user_id)
+def get_user(user_id: int, db: Annotated[Database, Depends(get_database_object)]):
+    try:
+        user = BSEUser(db, user_id)
+        return user
+    except Exception as e:
+        print(e)
+        
 
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Annotated[Database, Depends(get_database_object)]):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -114,13 +106,24 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
         token_data = TokenData(user_id=user_id)
     except InvalidTokenError:
         raise credentials_exception
-    user = get_user(user_id=token_data.user_id)
+    user = get_user(token_data.user_id, db)
     if user is None:
         raise credentials_exception
     return user
 
 
-@router.post('/test_balance')
-def test_balance(user_id: int, db: Annotated[Database, Depends(get_database_object)]):
-    user = BSEUser(db, user_id)
-    return user.get_balances()
+# BALANCE ---------------------
+
+@router.get("/balance")
+async def get_balance(current_user: Annotated[User, Depends(get_current_user)]):
+    user_balance = current_user.get_balances()
+    return {
+        "balances": [{
+            "balance": asset.balance,
+            "name": asset.name,
+            "ticker": asset.ticker,
+        } for asset in user_balance]}
+    
+def update_balance(change: int, db: Annotated[Database, Depends(get_database_object)]):
+    return
+
