@@ -212,10 +212,13 @@ async def listen_for_updates():
                 
                 
                 # update balance
-                if data["action"] == "update_balance":
-                    new_balance = data["balance"]
-                    print(f"New balance for user {user_id}: {new_balance}")
+                if data["action"] == "currency":
+                    currency = data["assets"]
+                    print(currency)
                 
+                    #listbox_buy.insert(0, )
+                
+                '''
                 # update orders
                 
                 # calculate space between two parms
@@ -256,7 +259,7 @@ async def listen_for_updates():
                                 listbox_sell.delete(i)
                                 current_orders.remove(order_str)
                                 break
-                
+                '''
             except websockets.ConnectionClosed:
                 break
             
@@ -336,10 +339,24 @@ def sell_func(feet_price, feet_amount):
         messagebox.showinfo("", f"No Internet!")
         return None  
     
-
-# CURRENCY
-
 def update_currency():
+    global listbox_balance
+    try:
+        listbox_balance.delete(0)
+        r = requests.get(f"{url}/assets")
+        r.raise_for_status()
+        for asset in r.json()['assets']:
+            print(asset)
+            listbox_balance.insert(0, f"{asset["ticker"]}" + " "*21 + f"{asset["asset_id"]}")
+    except requests.exceptions.RequestException as e:
+        messagebox.showerror("", f"No Internet") 
+        
+
+def choose_currency(item):
+    string = item.get(item.curselection()[0])
+    dataset = list(string.split(" "))
+    print(dataset[0])
+    print(dataset[-1])
     
 
     
@@ -375,6 +392,11 @@ def open_game_window():
     listbox_balance = Listbox(mainframe) 
     listbox_balance.config(font=("Courier", 14), width=22)
     listbox_balance.grid(row = 1, column = 5)
+    
+    
+    Button(mainframe, text=f"UPDATE CURRENCY", command=lambda: update_currency(), width=18, height=2,bg="green", fg="white").grid(column=5, row=2)
+    Button(mainframe, text=f"Choose CURRENCY", command=lambda: choose_currency(listbox_balance), width=18, height=2,bg="green", fg="white").grid(column=5, row=3)
+    
     
 
     # BUY_______________________________
