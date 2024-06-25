@@ -32,6 +32,10 @@ class Database {
     void update_user_balance_poeur(std::string& email, int amount);
     void update_user_balance_frc(std::string& email, int amount);
 
+    // here ist bool for status return, if delted or not
+    bool order_delete(int order_if);
+
+
     struct OrderDB give_order_by_id(int id);
 
     std::vector<OrderDB> get_all_orders();

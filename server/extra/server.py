@@ -50,6 +50,7 @@ class Order(BaseModel):
 
 class OrderToAccept(BaseModel):
     email: str
+    order_id: int
     trader_id: int
     item: str
     price: int
@@ -187,7 +188,7 @@ async def get_orders():
         for order in orders:
             # Websocket
             for client in clients:
-                data = {"action": action, "trader_id": order.trader_id, "item": order.item, "pair_item": order.pair_item, 'price': order.price, 'item_amount': order.item_amount}
+                data = {"action": action, "order_id": order.id, "trader_id": order.trader_id, "item": order.item, "pair_item": order.pair_item, 'price': order.price, 'item_amount': order.item_amount}
                 try:
                     await client.send_text(json.dumps(data))
                 except Exception as e:
@@ -201,7 +202,7 @@ async def accept_order(order: OrderToAccept):
         if(db.get_user_balance_poeur(order.email) >= order.price):
             db.update_user_balance_poeur(order.email, -order.price)
             db.update_user_balance_frc(order.email, order.item_amount)
-            # TODO: remove this order from database
+            # TODO: remove this order from database, we have here order.order_id
         else:
             # TODO: error poeur balance is low
             return # Delete
