@@ -118,7 +118,7 @@ install(TARGETS BSE
   LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/extra)
 
 
-target_link_libraries(BSE PRIVATE pybind11::pybind11_headers sqlpp11::sqlpp11 sqlpp11::sqlite3 ${PYTHON_LIBRARIES})
+target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3 ${PYTHON_LIBRARIES})
 
 
 
