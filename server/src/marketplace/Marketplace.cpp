@@ -30,4 +30,6 @@ int Marketplace::sell_asset_2(int amount) {
     return 0;
 }
 
+
+
 }  // namespace BSE

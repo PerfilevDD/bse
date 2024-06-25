@@ -51,6 +51,7 @@ PYBIND11_MODULE(BSE, m) {
 
     pybind11::class_<User>(m, "User")
         .def(pybind11::init<Database&, std::string&>())
+        .def(pybind11::init<Database&, int&>())
         .def(pybind11::init<Database&, std::string&, std::string&>())
         .def("check_password", &User::check_password)
         .def("get_balance", &User::get_balance)

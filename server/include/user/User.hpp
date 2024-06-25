@@ -8,6 +8,7 @@ namespace BSE {
 class User {
    public:
     User(Database& database, std::string& email);
+    User(Database& database, int& user_id);
     User(Database& database, std::string& email, std::string& password);
 
     bool check_password(std::string& password);

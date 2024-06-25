@@ -16,6 +16,24 @@ std::string User::hash(std::string& password) {
     return oss.str();
 }
 
+User::User(BSE::Database &database, int &user_id): user_id(user_id), db(database) {
+    auto& sqlppDb = *db.get_sqlpp11_db();
+
+    UserTable userTable;
+
+    auto results = sqlppDb(
+            sqlpp::select(all_of(userTable)).
+            from(userTable).
+            where(userTable.id == user_id));
+
+    if (results.empty())
+        throw std::invalid_argument("User not found");
+
+    const auto& result = results.front();
+    email = result.email;
+    password_hash = result.password;
+}
+
 User::User(Database& database, std::string& email) : db(database), email(email) {
     auto& sqlppDb = *db.get_sqlpp11_db();
 

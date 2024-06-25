@@ -36,4 +36,6 @@ Order::Order(Database& Database,
     }
 }
 
+Order::Order(BSE::Database &Database, int order_id): db(Database), order_id(order_id) {}
+
 }  // namespace BSE

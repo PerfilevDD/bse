@@ -16,6 +16,9 @@ class Order {
           int price,
           int item_amount);
 
+    Order(Database& Database,
+          int order_id);
+
    private:
     int order_id;
     Database& db;
