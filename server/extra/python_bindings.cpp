@@ -28,14 +28,7 @@ PYBIND11_MODULE(BSE, m) {
 
     pybind11::class_<Database, std::shared_ptr<Database>>(m, "Database")
             .def(pybind11::init<>())
-            .def("get_user_balance_frc", &Database::get_user_balance_frc)
-            .def("get_user_balance_poeur", &Database::get_user_balance_poeur)
-            .def("update_user_balance_poeur", &Database::update_user_balance_poeur)
-            .def("update_user_balance_frc", &Database::update_user_balance_frc)
-            .def("get_all_orders", &Database::get_all_orders)
-            .def("give_order_by_id", &Database::give_order_by_id)
-            .def("get_sqlpp11_db", &Database::get_sqlpp11_db)
-            .def("find_user_by_email", &Database::find_user_by_email);
+            .def("get_sqlpp11_db", &Database::get_sqlpp11_db);
 
     pybind11::class_<Asset>(m, "Asset")
             .def(pybind11::init<int>());
