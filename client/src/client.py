@@ -14,6 +14,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from ttkbootstrap import Style
 
 from windows.authentication import AuthenticationWindow
+from windows.pair_selector import PairSelector
 from state import WindowState
 
 from PIL import Image, ImageTk
@@ -339,7 +340,13 @@ def update_graphic(graphic, canvas, ax):
     graphic.after(10000, update_graphic)
 
 
+def open_trade_window(pair_id):
+    print("Opening")
+
+
 # open_game_window()
+pair_selector = PairSelector(state=state, callback_fn=open_trade_window)
+pair_selector.mainloop()
 
 authentication_window = AuthenticationWindow(state=state)
 authentication_window.mainloop()
