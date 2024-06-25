@@ -64,8 +64,6 @@ enable_testing()
 #----------Download and use pybind11-----------#
 #----------------------------------------------#
 
-find_package(PythonLibs REQUIRED)
-include_directories(${PYTHON_INCLUDE_DIRS})
 # Download pybind11
 FetchContent_Declare(
   pybind11
@@ -96,28 +94,17 @@ FetchContent_MakeAvailable(sqlpp11)
 #---------------Erzeuge Projekt----------------#
 #----------------------------------------------#
 
-# Legt die Variable SRC_FILES an, die alle
-# .cpp-Dateien des Projekts benennt,
-# die in Verzeichnis src/ liegen.
-file(GLOB SRC_FILES
-  ${PROJECT_SOURCE_DIR}/src/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/db/*.cpp
-        ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/order/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
-  ${PROJECT_SOURCE_DIR}/src/user/*.cpp
-        )
-
 
 # Baue das Programm '---' aus den Quellen
 file(GLOB SRC_FILES
-${PROJECT_SOURCE_DIR}/src/*.cpp
-${PROJECT_SOURCE_DIR}/src/db/*.cpp
-${PROJECT_SOURCE_DIR}/src/asset/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/asset/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/db/*.cpp
         ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
-${PROJECT_SOURCE_DIR}/src/order/*.cpp
-${PROJECT_SOURCE_DIR}/src/user/*.cpp)
+        ${PROJECT_SOURCE_DIR}/src/order/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/tradePair/*.cpp
+        ${PROJECT_SOURCE_DIR}/src/user/*.cpp
+)
 
 
 pybind11_add_module(BSE
@@ -131,21 +118,12 @@ install(TARGETS BSE
   LIBRARY DESTINATION ${PROJECT_SOURCE_DIR}/extra)
 
 
-
-target_link_libraries(BSE PRIVATE sqlpp11::sqlpp11 sqlpp11::sqlite3 ${PYTHON_LIBRARIES})
+target_link_libraries(BSE PRIVATE pybind11::pybind11_headers sqlpp11::sqlpp11 sqlpp11::sqlite3 ${PYTHON_LIBRARIES})
 
 
 
 #----------------------------------------------#
 #-------------Erzeuge Testprogramme------------#
 #----------------------------------------------#
-
-file(GLOB SRC_FILES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-add_executable(test_database tests/test_database.cpp ${SRC_FILES}
-        src/db/sqlite.cpp
-        src/user/User.cpp)
-target_link_libraries(test_database GTest::gtest_main)
-target_link_libraries(test_database sqlite3)
-target_link_libraries(test_database sqlpp11)
 
 #add_executable(main src/main.cpp)

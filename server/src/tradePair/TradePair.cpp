@@ -40,8 +40,8 @@ namespace BSE {
 
     }
 
-    pybind11::list TradePair::get_orders_as_python_list() {
+    /*pybind11::list TradePair::get_orders_as_python_list() {
         pybind11::list orders_list = pybind11::cast(get_orders());
         return orders_list;
-    }
+    }*/
 }  // namespace BSE
