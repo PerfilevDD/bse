@@ -76,6 +76,21 @@ class WebsocketManager:
                 "ticker": asset.ticker,
             } for asset in user_balance]}
             await self._send_message_to_session(session_id, message_dict)
+            
+    
+    async def process_graphic_updates(self, pair_id):
+        if pair_id not in self.clients_for_pair_id:
+            return
+
+        for session_id, _ in self.clients_for_pair_id[pair_id]:
+            
+            all_orders = Order.get_all_completed_orders(self.db)
+
+            message_dict = {"type": "order_history", "data": [{
+                "price": order.get_price(),
+                "time": order.get_completed_timestamp(),
+            } for order in all_orders]}
+            await self._send_message_to_session(session_id, message_dict)
 
     async def process_orderbooks_update(self, pair_id):
         if pair_id not in self.clients_for_pair_id:

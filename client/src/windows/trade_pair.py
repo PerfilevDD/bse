@@ -2,6 +2,7 @@ import asyncio
 import json
 import threading
 from tkinter import Tk, Listbox, ttk, StringVar, Button, BOTH, messagebox, END
+from matplotlib.figure import Figure 
 
 import requests
 import websockets
@@ -15,6 +16,9 @@ from interactions.trading_pairs import get_trading_pair, get_orders
 from interactions.assets import get_assets
 
 from interactions.user import get_balances
+
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  
+NavigationToolbar2Tk) 
 
 
 def _parse_orderbook(orders):
@@ -49,6 +53,8 @@ class TradePair(Tk):
         self.assets = get_assets(self.state.url)
         self.balances = get_balances(self.state.url, self.state.token)
         self.orders = get_orders(self.state.url, pair_id)
+        self.time_data = []
+        self.price_data = []
 
         if not self.trading_pair or not self.assets or not self.balances:
             messagebox.showerror(title="Parsing error.",
@@ -95,6 +101,12 @@ class TradePair(Tk):
                         for balance in data["data"]
                     }
                     self.update_balances()
+                
+                if "type" in data and data["type"] == "order_history":
+                    for order in data["data"]:
+                        self.time_data.append(order["time"])
+                        self.price_data.append(order["price"])
+                    self.update_graphic()
 
                 if "type" in data and data["type"] == "ping":
                     await self.websocket.send(json.dumps({"type": "pong"}))
@@ -112,7 +124,7 @@ class TradePair(Tk):
         self.open = False
         self.destroy()
         self.return_to_selector_fn()
-
+        
     def open_trading_ui(self):
         # Main window
 
@@ -216,40 +228,32 @@ class TradePair(Tk):
                bg="green", fg="white").grid(column=3, row=3)
 
         # GRAPHIC
-
+        
         graphic = ttk.Frame(mainframe)
         graphic.grid(row=1, column=2)
         graphic.grid_columnconfigure((0, 1), weight=1)
         graphic.grid_rowconfigure(0, weight=1)
+        
+        self.fig, self.ax = plt.subplots()
+        self.canvas = FigureCanvasTkAgg(self.fig, master=graphic)
+        self.canvas.get_tk_widget().grid(column=0, row=0)
 
-        frame = ttk.Frame(graphic)
-        frame.grid(column=6, row=2)
+        self.update_graphic()
 
-        frame.pack(fill=BOTH, expand=1)
 
-        fig, ax = plt.subplots()
-        canvas = FigureCanvasTkAgg(fig, master=frame)
-        canvas.get_tk_widget().pack(fill=BOTH, expand=1)
-        entry_price.focus()
 
-    def update_graphic(self, graphic, canvas, ax):
-        database = []
-        price_data = [data['price'] for data in database]
-        time_data = [data['time'] for data in database]
+    def update_graphic(self):
 
-        ax.clear()
-
-        ax.plot(price_data, label='Price')
-        ax.plot(time_data, label='Time')
-
-        ax.set_xlabel('Trade Index')
-        ax.set_ylabel('Price')
-        ax.set_title('Currency Price Chart')
-        ax.legend()
-
-        canvas.draw()
-
-        graphic.after(10000, self.update_graphic)
+        self.ax.clear()
+        self.ax.plot(self.time_data, self.price_data, label="jdjd")
+        self.ax.set_xlabel("Time")
+        self.ax.set_ylabel("Price")
+        self.ax.set_title("Currency Price Chart")
+        self.ax.legend()
+        
+        self.canvas.draw()
+        self.after(10000, self.update_graphic)
+        
 
     def create_order(self, price, amount, buy):
         headers = {"Authorization": "Bearer " + self.state.token}
