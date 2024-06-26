@@ -34,17 +34,17 @@ class TradePair(Tk):
     listbox_sell: Listbox
     listbox_buy: Listbox
     label_text: StringVar
-
+    websocket: websockets
     base_asset_ticker: str
     price_asset_ticker: str
 
     def __init__(self, pair_id: int, state: WindowState, return_to_selector_fn):
         super().__init__()
-
+        self.open = True
         self.title = "Trading Window"
         self.state = state
         self.pair_id = pair_id
-
+        self.return_to_selector_fn = return_to_selector_fn
         self.trading_pair = get_trading_pair(self.state.url, pair_id)
         self.assets = get_assets(self.state.url)
         self.balances = get_balances(self.state.url, self.state.token)
@@ -66,16 +66,19 @@ class TradePair(Tk):
         self.ws_thread = threading.Thread(target=asyncio.run, args=(self.listen_updates(),), daemon=True)
         self.ws_thread.start()
 
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
     async def listen_updates(self):
         ws_url = self.state.url.replace('http', 'ws').replace('htpps', 'wss') + '/ws'
-        websocket = await websockets.connect(ws_url)
-        await websocket.send(json.dumps(
-            {"action": "register", "user_id": self.state.user_id, "pair_id": self.pair_id}
+        self.websocket = await websockets.connect(ws_url)
+
+        await self.websocket.send(json.dumps(
+            {"type": "register", "user_id": self.state.user_id, "pair_id": self.pair_id}
         ))
 
-        while True:
+        while self.open:
             try:
-                message = await websocket.recv()
+                message = await self.websocket.recv()
                 data = json.loads(message)
                 if "type" in data and data["type"] == "orderbook":
                     self.orders = data["data"]
@@ -89,8 +92,21 @@ class TradePair(Tk):
                     }
                     self.update_balances()
 
+                if "type" in data and data["type"] == "ping":
+                    await self.websocket.send(json.dumps({"type": "pong"}))
+
             except:
                 pass
+
+        await self.websocket.send(json.dumps(
+            {"type": "leave", "user_id": self.state.user_id, "pair_id": self.pair_id}
+        ))
+
+    def on_close(self):
+        self.open = False
+        self.ws_thread.join()
+        self.destroy()
+        self.return_to_selector_fn()
 
     def open_trading_ui(self):
         # Main window
