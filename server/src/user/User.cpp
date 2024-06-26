@@ -87,7 +87,7 @@ namespace BSE {
                                            static_cast<int>(row.balance),
                                            asset.name.text,
                                            asset.ticker.text,
-                                           asset.id
+                                           static_cast<int>(asset.id)
                                    });
                 asset_found = true;
                 break;
@@ -97,7 +97,7 @@ namespace BSE {
                                            0,                   // Saldo von 0, da der Benutzer keinen Saldo für das Asset hat
                                            asset.name.text,
                                            asset.ticker.text,
-                                           asset.id
+                                           static_cast<int>(asset.id)
                                    });
             }
 

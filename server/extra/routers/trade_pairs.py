@@ -80,6 +80,7 @@ async def create_trade(trade: Trade, db: Annotated[Database, Depends(get_databas
         raise e
 
     except Exception as e:
+        print(e)
         raise HTTPException(status_code=500, detail="Trade couldn't be completed")
 
 
