@@ -198,7 +198,6 @@ class TradePair(Tk):
         graphic.after(10000, self.update_graphic)
 
     def buy_func(self, feet_price, feet_amount):
-        global url
 
         price = feet_price.get()
         amount = feet_amount.get()
@@ -206,7 +205,7 @@ class TradePair(Tk):
         try:
             data = {'trader_id': self.state.user_id, 'item': 'FRC', 'pair_item': 'POEUR', 'price': price,
                     'item_amount': amount}
-            r = requests.post(f"{url}/trade", json=data)
+            r = requests.post(f"{self.state.url}/trade", json=data)
             r.raise_for_status()
             r.json()['status'] == 'trade reg complete'
 
@@ -224,7 +223,7 @@ class TradePair(Tk):
         try:
             data = {'trader_id': self.state.user_id, 'item': 'POEUR', 'pair_item': 'FRC', 'price': price,
                     'item_amount': amount}
-            r = requests.post(f"{url}/trade", json=data)
+            r = requests.post(f"{self.state.url}/trade", json=data)
             r.raise_for_status()
             r.json()['status'] == 'trade reg complete'
 

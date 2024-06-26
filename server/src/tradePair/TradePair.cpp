@@ -43,12 +43,6 @@ namespace BSE {
 
             for (auto &order: matched_orders) {
 
-                if (new_order.get_fullfilled_amount() >= new_order.get_amount()) {
-                    new_order.set_completed(true);
-                    break;
-                }
-
-
                 int amount_to_update;
                 int matched_order_unfullfilled_amount = order.get_amount() - order.get_fullfilled_amount();
                 int new_order_unfullfilled_amount = new_order.get_amount() - new_order.get_fullfilled_amount();
@@ -76,6 +70,12 @@ namespace BSE {
                     partner_user.update_balance(amount_to_update, base_asset);
                     user.update_balance(amount_to_update * order.get_price(), price_asset);
                 }
+
+                if (new_order.get_fullfilled_amount() >= new_order.get_amount()) {
+                    new_order.set_completed(true);
+                    break;
+                }
+
             }
 
             tx.commit();
