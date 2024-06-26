@@ -29,7 +29,7 @@ namespace BSE {
         OrderTable orderTable;
 
         try {
-            sqlppDb(sqlpp::insert_into(orderTable).set(
+            order_id = sqlppDb(sqlpp::insert_into(orderTable).set(
                     orderTable.trader_id = trader_id,
                     orderTable.price = price,
                     orderTable.amount = amount,
@@ -68,6 +68,7 @@ namespace BSE {
     }
 
     Order::Order(Database &Database,
+                 int order_id,
                  int trader_id,
                  int pair_id,
                  int price,
@@ -75,6 +76,7 @@ namespace BSE {
                  int fullfilled_amount,
                  bool completed,
                  bool buy) : db(Database),
+                             order_id(order_id),
                              trader_id(trader_id),
                              pair_id(pair_id),
                              price(price),

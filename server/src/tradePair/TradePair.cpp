@@ -27,7 +27,8 @@ namespace BSE {
             for (auto &order: orders) {
                 // Check if the order is buy -> Match all orders with the same or lower price
                 // If sell order then take all orders with a higher price
-                if ((order.is_buy() && order.get_price() <= price) || (!order.is_buy() && order.get_price() >= price)) {
+                if ((buy && !order.is_buy() && order.get_price() <= price) ||
+                    (!buy && order.is_buy() && order.get_price() >= price)) {
                     // If user wants to buy then we need to process the matching orders in ascending order (small to big)
                     // If he wants to sell then we need to match the smalles order first
                     // The orders are sorted ascending by default so the later the order the bigger the amount
@@ -41,8 +42,10 @@ namespace BSE {
             Order new_order = Order(db, trader_id, pair_id, price, amount, buy);
 
             for (auto &order: matched_orders) {
+
                 if (new_order.get_fullfilled_amount() >= new_order.get_amount()) {
                     new_order.set_completed(true);
+                    break;
                 }
 
 
@@ -55,6 +58,7 @@ namespace BSE {
                     amount_to_update = matched_order_unfullfilled_amount;
                     order.set_completed(true);
                 }
+
 
                 new_order.set_fullfilled_amount(new_order.get_fullfilled_amount() + amount_to_update);
                 order.set_fullfilled_amount(order.get_fullfilled_amount() + amount_to_update);
@@ -96,6 +100,7 @@ namespace BSE {
                                                           orderTable.completed == completed)))) {
                 Order order(
                         db,
+                        row.id,
                         row.trader_id,
                         row.pair_id,
                         row.price,
