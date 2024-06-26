@@ -53,6 +53,8 @@ class TradePair(Tk):
         self.assets = get_assets(self.state.url)
         self.balances = get_balances(self.state.url, self.state.token)
         self.orders = get_orders(self.state.url, pair_id)
+        self.time_data = []
+        self.price_data = []
 
         if not self.trading_pair or not self.assets or not self.balances:
             messagebox.showerror(title="Parsing error.",
@@ -102,7 +104,6 @@ class TradePair(Tk):
                 
                 if "type" in data and data["type"] == "order_history":
                     for order in data["data"]:
-                        print(order)
                         self.time_data.append(order["time"])
                         self.price_data.append(order["price"])
                     self.update_graphic()
@@ -243,14 +244,10 @@ class TradePair(Tk):
 
     def update_graphic(self):
 
-        self.time_data = []
-        self.price_data = []
-
-
         self.ax.clear()
         self.ax.plot(self.time_data, self.price_data, label="jdjd")
         self.ax.set_xlabel("Time")
-        self.ax.set_ytable("Price")
+        self.ax.set_ylabel("Price")
         self.ax.set_title("Currency Price Chart")
         self.ax.legend()
         

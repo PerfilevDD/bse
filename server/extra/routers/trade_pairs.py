@@ -64,6 +64,7 @@ async def create_trade(trade: Trade, db: Annotated[Database, Depends(get_databas
                                trade.buy)
         await websocket_clients_manager.process_orderbooks_update(trade.trade_pair_id)
         await websocket_clients_manager.process_balance_updates(trade.trade_pair_id)
+        await websocket_clients_manager.process_graphic_updates(trade.trade_pair_id)
         return {"status": "complete"}
 
     except Exception as e:
