@@ -27,6 +27,7 @@ namespace BSE {
         bool check_password(std::string &password);
 
         std::string hash(std::string &password);
+        void update_balance(int change, int asset_id);
 
 
         // Getters and Setters
@@ -41,7 +42,6 @@ namespace BSE {
             return user_id;
         };
 
-        void update_balance(int change, int asset_id);
 
 
     private:
