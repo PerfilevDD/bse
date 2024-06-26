@@ -1,4 +1,6 @@
+import asyncio
 import json
+import threading
 
 from fastapi import APIRouter, WebSocket
 from pydantic import BaseModel
@@ -6,11 +8,18 @@ import uuid
 
 from BSE import User as BSEUser, Database, TradePair, Order
 
+
 class WebsocketManager:
     def __init__(self):
+        self.open = True
+
         self.connected_sockets = {}
         self.clients_for_pair_id = {}
         self.db = Database()
+        self.pinged_sessions = []
+
+        self.ping_thread = threading.Thread(target=asyncio.run, args=(self.ping_loop(), ), daemon=True)
+        self.ping_thread.start()
 
     def add_client(self, client: WebSocket):
         session_id = str(uuid.uuid4())
@@ -27,7 +36,6 @@ class WebsocketManager:
 
         for remove in to_remove:
             self.clients_for_pair_id[remove[0]].remove((remove[1], remove[2]))
-
 
     def register_client_for_pair_id(self, session_id, user_id, pair_id):
         if pair_id not in self.clients_for_pair_id:
@@ -50,6 +58,7 @@ class WebsocketManager:
             await self.connected_sockets[session_id].send_json(message_dict)
         except:
             pass
+
     async def send_confirmation(self, session_id):
         await self._send_message_to_session(session_id=session_id, message_dict={"type": "confirmation"})
 
@@ -61,11 +70,11 @@ class WebsocketManager:
             user = BSEUser(self.db, user_id)
             user_balance = user.get_balances()
 
-            message_dict =  { "type": "balances", "data": [{
-                    "balance": asset.balance,
-                    "name": asset.name,
-                    "ticker": asset.ticker,
-                } for asset in user_balance]}
+            message_dict = {"type": "balances", "data": [{
+                "balance": asset.balance,
+                "name": asset.name,
+                "ticker": asset.ticker,
+            } for asset in user_balance]}
             await self._send_message_to_session(session_id, message_dict)
 
     async def process_orderbooks_update(self, pair_id):
@@ -90,13 +99,27 @@ class WebsocketManager:
                 "buy": buy_orders,
                 "sell": sell_orders
             }
-            message_dict = { "type": "orderbook", "data": data}
+            message_dict = {"type": "orderbook", "data": data}
             await self._send_message_to_session(session_id, message_dict)
+
+    async def ping_loop(self):
+        while True:
+            for session_id in self.connected_sockets.keys():
+                await self._send_message_to_session(session_id, {"type": "ping"})
+                self.pinged_sessions.append(session_id)
+
+            await asyncio.sleep(2)
+
+            for session_id in self.pinged_sessions:
+                self.remove_client(session_id)
+
+            self.pinged_sessions = []
 
 
 websocket_clients_manager = WebsocketManager()
 
 router = APIRouter()
+
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -106,17 +129,21 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             message = await websocket.receive_text()
             data = json.loads(message)
-            if data["action"] == "register":
+            if data["type"] == "register":
                 user_id = data["user_id"]
-                trade_id = data["trade_id"]
+                trade_id = data["pair_id"]
                 websocket_clients_manager.register_client_for_pair_id(session_id, user_id, trade_id)
                 await websocket_clients_manager.send_confirmation(session_id)
 
-            if data["action"] == "leave":
+            if data["type"] == "leave":
                 user_id = data["user_id"]
-                trade_id = data["trade_id"]
+                trade_id = data["pair_id"]
                 websocket_clients_manager.remove_client_for_pair_id(session_id, user_id, trade_id)
                 await websocket_clients_manager.send_confirmation(session_id)
+
+            if data["type"] == "pong":
+                if session_id in websocket_clients_manager.pinged_sessions:
+                    websocket_clients_manager.pinged_sessions.remove(session_id)
 
     except Exception as e:
         websocket_clients_manager.remove_client(session_id)

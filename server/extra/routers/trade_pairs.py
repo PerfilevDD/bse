@@ -26,7 +26,6 @@ router = APIRouter(
 @router.post("/trade-pairs")
 def new_trade_pairs(base_asset_id: int, price_asset_id: int, db: Annotated[Database, Depends(get_database_object)]):
     new_item = TradePair(db, base_asset_id, price_asset_id)
-    new_item.create_order(1, 1, 1, 1, 1)
     return {"status": "complete"}
 
 

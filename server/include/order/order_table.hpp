@@ -144,7 +144,7 @@ namespace BSE {
                     const T &operator()() const { return completed_timestamp; }
                 };
             };
-            using _traits = sqlpp::make_traits<sqlpp::time_point>;
+            using _traits = sqlpp::make_traits<sqlpp::integer>;
         };
 
 

@@ -71,8 +71,8 @@ class AuthenticationWindow(Tk):
             # Wellcome func HERE
             messagebox.showinfo("", f"Welcome")
 
-            user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
-            user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
+            self.state.user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
+            self.state.user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
             # get_user_balance(user_email)
             self.state.token = token
 
@@ -106,13 +106,13 @@ class AuthenticationWindow(Tk):
             r = requests.post(f"{url}/register", json=data)
             r.raise_for_status()
             if r.json()['status'] == 'reg complete':
-                server_auth_user(self.state.url, email, password)
+                token, user_data = server_auth_user(self.state.url, email, password)
 
                 # Wellcome func HERE
                 messagebox.showinfo("", f"Welcome")
 
-                user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
-                user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
+                self.state.user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
+                self.state.user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
                 # get_user_balance(user_email)
                 self.state.token = token
 
