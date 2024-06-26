@@ -3,7 +3,11 @@ import json
 import threading
 from tkinter import Tk, Listbox, ttk, StringVar, Button, BOTH, messagebox, END
 from matplotlib.figure import Figure 
+from datetime import datetime
+import matplotlib.dates as mdates
+from matplotlib.style import use as mpl_style
 
+from ttkbootstrap import Style
 import requests
 import websockets
 from matplotlib import pyplot as plt
@@ -16,6 +20,8 @@ from interactions.trading_pairs import get_trading_pair, get_orders
 from interactions.assets import get_assets
 
 from interactions.user import get_balances
+
+from interactions.graph import get_graph_data
 
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,  
 NavigationToolbar2Tk) 
@@ -53,8 +59,7 @@ class TradePair(Tk):
         self.assets = get_assets(self.state.url)
         self.balances = get_balances(self.state.url, self.state.token)
         self.orders = get_orders(self.state.url, pair_id)
-        self.time_data = []
-        self.price_data = []
+        self.time_data, self.price_data = get_graph_data(self.state.url)
 
         if not self.trading_pair or not self.assets or not self.balances:
             messagebox.showerror(title="Parsing error.",
@@ -68,6 +73,9 @@ class TradePair(Tk):
 
         self.open_trading_ui()
         self.update_orderbook()
+        
+        
+        style = Style('darkly')
 
         self.ws_thread = threading.Thread(target=asyncio.run, args=(self.listen_updates(),), daemon=True)
         self.ws_thread.start()
@@ -77,6 +85,8 @@ class TradePair(Tk):
     async def listen_updates(self):
         ws_url = self.state.url.replace('http', 'ws').replace('htpps', 'wss') + '/ws'
         self.websocket = await websockets.connect(ws_url)
+        self.time_data = []
+        self.price_data = []
 
         await self.websocket.send(json.dumps(
             {"type": "register", "user_id": self.state.user_id, "pair_id": self.pair_id}
@@ -104,7 +114,8 @@ class TradePair(Tk):
                 
                 if "type" in data and data["type"] == "order_history":
                     for order in data["data"]:
-                        self.time_data.append(order["time"])
+                        time = datetime.utcfromtimestamp(int(order["time"])//1000)
+                        self.time_data.append(time)
                         self.price_data.append(order["price"])
                     self.update_graphic()
 
@@ -126,6 +137,7 @@ class TradePair(Tk):
         self.return_to_selector_fn()
         
     def open_trading_ui(self):
+        
         # Main window
 
         # Window settings
@@ -135,19 +147,10 @@ class TradePair(Tk):
         self.rowconfigure(0, weight=1)
 
         # Balance
-        empty_label = ttk.Label(mainframe, text=f"     ")
-        empty_label.config(font=("Courier", 12))
-        empty_label.grid(column=4, row=0)
 
-        # balance_label = ttk.Label(mainframe, text=f"Currency / Your Balance")
-        # balance_label.config(font=("Courier", 12))
-        # balance_label.grid(column=5, row=0)
+        
         # BUY_______________________________
 
-        buy = ttk.Frame(mainframe)
-        buy.grid(row=2, column=1)
-        buy.grid_columnconfigure((0, 1), weight=1)
-        buy.grid_rowconfigure(0, weight=1)
 
         # Scrollbox
         text = f"Trading Pair: {self.base_asset_ticker}/{self.price_asset_ticker}\n" \
@@ -157,84 +160,91 @@ class TradePair(Tk):
         self.label_text = StringVar()
         self.label_text.set(text)
 
-        legend_label = ttk.Label(mainframe, textvariable=self.label_text)
-        legend_label.config(font=("Courier", 24))
-        legend_label.grid(column=0, row=0)
 
         self.listbox_buy = Listbox(mainframe)
-        self.listbox_buy.config(font=("Courier", 14), width=22)
-        self.listbox_buy.grid(row=2, column=0, padx=20, )
+        self.listbox_buy.config(font=("Courier", 14), width=22, height=20)
+        self.listbox_buy.grid(row=1, column=0, padx=20)
 
         # Labels
 
-        price_label = ttk.Label(buy, text=f"Price")
+        
+        empty_label = ttk.Label(mainframe, text=" ")
+        empty_label.config(font=("Courier", 24))
+        empty_label.grid(column=0, row=0)
+        
+        legend_label = ttk.Label(mainframe, textvariable=self.label_text)
+        legend_label.config(font=("Courier", 24))
+        legend_label.grid(column=1, row=0)
+
+
+
+        center = ttk.Frame(mainframe)
+        center.grid(row=2, column=1)
+        center.grid_columnconfigure((0, 1), weight=1)
+        center.grid_rowconfigure(0, weight=1)
+
+        price_label = ttk.Label(center, text=f"Price")
         price_label.config(font=("Courier", 16))
-        price_label.grid(column=1, row=1)
+        price_label.grid(column=0, row=0)
 
         feet_price = StringVar()
-        entry_price = ttk.Entry(buy, textvariable=feet_price)
+        entry_price = ttk.Entry(center, textvariable=feet_price)
         entry_price.config(font=("Courier", 14))
-        entry_price.grid(row=1, column=2, padx=20, pady=5)
+        entry_price.grid(row=0, column=1, padx=20, pady=5)
 
-        amount_label = ttk.Label(buy, text=f"Amount")
-        amount_label.grid(column=1, row=2)
+        amount_label = ttk.Label(center, text=f"Amount")
+        amount_label.grid(column=0, row=1)
         amount_label.config(font=("Courier", 16))
 
         feet_amount = StringVar()
-        entry_amount = ttk.Entry(buy, textvariable=feet_amount)
+        entry_amount = ttk.Entry(center, textvariable=feet_amount)
         entry_amount.config(font=("Courier", 14))
-        entry_amount.grid(row=2, column=2, padx=20, pady=5)
+        entry_amount.grid(row=1, column=1, padx=20, pady=5)
 
-        Button(buy, text=f"BUY --", command=lambda i=0: self.create_order(feet_price.get(), feet_amount.get(), True),
+        Button(center, text=f"BUY", command=lambda i=0: self.create_order(feet_price.get(), feet_amount.get(), True),
                width=18, height=2,
                bg="red",
-               fg="white").grid(column=2, row=3)
+               fg="white").grid(column=1, row=2)
 
-        # SELL__________________________
-
-        sell = ttk.Frame(mainframe)
-        sell.grid(row=2, column=3)
-        sell.grid_columnconfigure((0, 1), weight=1)
-        sell.grid_rowconfigure(0, weight=1)
 
         # Scrollbox
         self.listbox_sell = Listbox(mainframe)
-        self.listbox_sell.config(font=("Courier", 14), width=22)
-        self.listbox_sell.grid(row=2, column=4)
+        self.listbox_sell.config(font=("Courier", 14), width=22, height=20)
+        self.listbox_sell.grid(row=1, column=2)
 
         # Labels
 
-        price_label = ttk.Label(sell, text=f"Price")
+        price_label = ttk.Label(center, text=f"Price")
         price_label.config(font=("Courier", 16))
-        price_label.grid(column=2, row=1)
+        price_label.grid(column=2, row=0)
 
         feet_price_sell = StringVar()
-        entry_price = ttk.Entry(sell, textvariable=feet_price_sell)
+        entry_price = ttk.Entry(center, textvariable=feet_price_sell)
         entry_price.config(font=("Courier", 14))
-        entry_price.grid(row=1, column=3, padx=20, pady=5)
+        entry_price.grid(row=0, column=3, padx=20, pady=5)
 
-        amount_label = ttk.Label(sell, text=f"Amount")
-        amount_label.grid(column=2, row=2)
+        amount_label = ttk.Label(center, text=f"Amount")
+        amount_label.grid(column=2, row=1)
         amount_label.config(font=("Courier", 16))
 
         feet_amount_sell = StringVar()
-        entry_amount = ttk.Entry(sell, textvariable=feet_amount_sell)
+        entry_amount = ttk.Entry(center, textvariable=feet_amount_sell)
         entry_amount.config(font=("Courier", 14))
-        entry_amount.grid(row=2, column=3, padx=20, pady=5)
+        entry_amount.grid(row=1, column=3, padx=20, pady=5)
 
-        Button(sell, text=f"SELL --",
+        Button(center, text=f"SELL",
                command=lambda i=0: self.create_order(feet_price_sell.get(), feet_amount_sell.get(), False), width=18,
                height=2,
-               bg="green", fg="white").grid(column=3, row=3)
+               bg="green", fg="white").grid(column=3, row=2)
 
         # GRAPHIC
         
         graphic = ttk.Frame(mainframe)
-        graphic.grid(row=1, column=2)
+        graphic.grid(row=1, column=1)
         graphic.grid_columnconfigure((0, 1), weight=1)
         graphic.grid_rowconfigure(0, weight=1)
         
-        self.fig, self.ax = plt.subplots()
+        self.fig, self.ax = plt.subplots(figsize=(12, 7))
         self.canvas = FigureCanvasTkAgg(self.fig, master=graphic)
         self.canvas.get_tk_widget().grid(column=0, row=0)
 
@@ -243,16 +253,22 @@ class TradePair(Tk):
 
 
     def update_graphic(self):
-
         self.ax.clear()
-        self.ax.plot(self.time_data, self.price_data, label="jdjd")
+
+        sorted_data = sorted(zip(self.time_data, self.price_data), key=lambda x: x[0])
+        sorted_time_data, sorted_price_data = zip(*sorted_data) if sorted_data else ([], [])
+
+        self.ax.plot(sorted_time_data, sorted_price_data, label="Price")
+        self.ax.scatter(sorted_time_data, sorted_price_data, color='red') 
+        self.ax.xaxis.set_major_formatter(mdates.DateFormatter('%m-%d %H:%M:%S'))
         self.ax.set_xlabel("Time")
         self.ax.set_ylabel("Price")
-        self.ax.set_title("Currency Price Chart")
         self.ax.legend()
         
         self.canvas.draw()
         self.after(10000, self.update_graphic)
+        
+        
         
 
     def create_order(self, price, amount, buy):

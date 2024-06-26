@@ -37,7 +37,7 @@ namespace BSE {
               int price,
               int amount,
               int fullfilled_amount,
-              int completed_timestamp,
+              const std::string& completed_timestamp,
               bool completed,
               bool buy);
 
@@ -55,7 +55,7 @@ namespace BSE {
                 "fullfilled_amount INT NOT NULL,"
                 "completed BOOL NOT NULL DEFAULT FALSE,"
                 "buy BOOL NOT NULL,"
-                "completed_timestamp integer DEFAULT NULL);";
+                "completed_timestamp TEXT );";
 
         int get_price() const {
             return price;
@@ -81,7 +81,7 @@ namespace BSE {
             return pair_id;
         }
 
-        int get_completed_timestamp() const {
+        std::string get_completed_timestamp() const {
             return completed_timestamp;
         }
 
@@ -109,7 +109,7 @@ namespace BSE {
         int price;
         int amount;
         int fullfilled_amount;
-        long completed_timestamp;
+        std::string completed_timestamp;
         bool buy;
         bool completed;
     };
