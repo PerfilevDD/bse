@@ -132,7 +132,7 @@ namespace BSE {
 
         struct CompletedTimestamp {
             struct _alias_t {
-                static constexpr const char _literal[] = "buy";
+                static constexpr const char _literal[] = "completed_timestamp";
                 using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
 
                 template<typename T>

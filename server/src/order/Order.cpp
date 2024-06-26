@@ -6,6 +6,8 @@
 #include <sstream>
 #include <order/Order.hpp>
 #include <order/order_table.hpp>
+#include <date/date.h>
+#include <date/tz.h>
 
 namespace BSE {
 
@@ -85,10 +87,10 @@ namespace BSE {
         auto &sqlpp11 = *db.get_sqlpp11_db();
         OrderTable orderTable;
 
-        auto timestamp = sqlpp::chrono::microsecond_point();
+        auto timestamp_UTC = std::chrono::system_clock::now();
 
         sqlpp11(sqlpp::update(orderTable).set(orderTable.completed = c,
-                                              orderTable.completed_timestamp = timestamp).where(
+                                              orderTable.completed_timestamp = timestamp_UTC).where(
                 orderTable.id == order_id));
         completed = c;
     }
@@ -102,5 +104,6 @@ namespace BSE {
         fullfilled_amount = new_fullfilled_amount;
 
     }
+
 
 }  // namespace BSE
