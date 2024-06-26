@@ -7,24 +7,6 @@ namespace BSE {
 // https://github.com/rbock/sqlpp11/blob/main/tests/sqlite3/usage/Sample.cpp
 // Dont delete, sonst ich lösch alles
 
-        struct Id {
-            struct _alias_t {
-                static constexpr const char _literal[] = "id";
-                using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;
-
-                template<typename T>
-                struct _member_t {
-                    T id;
-
-                    T &operator()() { return id; }
-
-                    const T &operator()() const { return id; }
-                };
-            };
-            using _traits = sqlpp::make_traits<sqlpp::integer, sqlpp::tag::must_not_insert>;
-        };
-
-
         struct UserId {
             struct _alias_t {
                 static constexpr const char _literal[] = "user_id";
@@ -80,7 +62,7 @@ namespace BSE {
 
 
     struct BalanceTable
-            : sqlpp::table_t<BalanceTable, BalanceTable_::Id, BalanceTable_::AssetId, BalanceTable_::UserId, BalanceTable_::Balance> {
+            : sqlpp::table_t<BalanceTable, BalanceTable_::AssetId, BalanceTable_::UserId, BalanceTable_::Balance> {
         struct _alias_t {
             static constexpr const char _literal[] = "Balance";
             using _name_t = sqlpp::make_char_sequence<sizeof(_literal), _literal>;

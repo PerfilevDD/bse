@@ -91,6 +91,7 @@ PYBIND11_MODULE(BSE, m) {
             .def("check_password", &User::check_password)
             .def("get_balances", &User::get_balances)
             .def("get_user_id", &User::get_user_id)
+            .def("get_balance", &User::get_balance)
             .def("update_balance", &User::update_balance);
 
 

@@ -105,6 +105,18 @@ namespace BSE {
 
     }
 
+    int User::get_balance(int asset_id) {
+        BalanceTable balanceTable;
+        auto &sqlppDb = *db.get_sqlpp11_db();
+
+        auto assets = sqlppDb(sqlpp::select(sqlpp::all_of(balanceTable)).from(
+                balanceTable).where(balanceTable.user_id == user_id && balanceTable.asset_id == asset_id));     // Abrufen aller Assets aus der Asset-Table
+        for (const auto &asset: assets) {
+            return static_cast<int>(asset.balance);
+        }
+        return 0;
+    }
+
     void User::update_balance(int change, int asset_id) {       // Hier wird Saldo eines bestimmten Assets für den Benutzer aktualisert 
         Balance balance(db, user_id, asset_id);     
         balance.update_balance(change);

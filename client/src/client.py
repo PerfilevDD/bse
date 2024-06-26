@@ -1,24 +1,7 @@
-from tkinter import *
-from tkinter import ttk
-from tkinter import messagebox
-import requests
-import asyncio
-import websockets
-import threading
-import json
-import jwt
-
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
-from ttkbootstrap import Style
-
 from windows.authentication import AuthenticationWindow
 from windows.pair_selector import PairSelector
 from windows.trade_pair import TradePair
 from state import WindowState
-
-from PIL import Image, ImageTk
 
 state = WindowState()
 

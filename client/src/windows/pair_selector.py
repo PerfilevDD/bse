@@ -53,7 +53,10 @@ class PairSelector(Tk):
         selector.grid(row=2, column=0)
 
     def select_pair(self):
-        selected_pair_id = self.listbox_pairs.curselection()[0]
-        trading_pair = self.trading_pairs[selected_pair_id]
-        self.destroy()
-        self.callback_fn(trading_pair["pair_id"])
+        try:
+            selected_pair_id = self.listbox_pairs.curselection()[0]
+            trading_pair = self.trading_pairs[selected_pair_id]
+            self.destroy()
+            self.callback_fn(trading_pair["pair_id"])
+        except IndexError:
+            messagebox.showerror("Invalid Click", "Please select a trading pair.")

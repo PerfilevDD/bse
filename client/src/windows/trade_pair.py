@@ -260,14 +260,23 @@ class TradePair(Tk):
                     'buy': buy
                     }
             r = requests.post(f"{self.state.url}/trade/create", json=data, headers=headers)
-            r.raise_for_status()
+            response_data = r.json()
 
-            messagebox.showinfo("", f"Order created")
-            return r.json()
+            # Check if a error response code has been returned
+            if not r.ok:
+                if "detail" in response_data:
+                    messagebox.showerror("Error", response_data["detail"])
+                else:
+                    messagebox.showinfo("", f"Error!")
+            else:
+                messagebox.showinfo("", f"Order created")
+            return response_data
 
+        # Check if the request itself failed
         except requests.exceptions.RequestException as e:
             messagebox.showinfo("", f"Error!")
-        return None
+        except ValueError:
+            messagebox.showerror("Invalid Data", "Please enter two valid numbers.")
 
     def update_orderbook(self):
         self.listbox_buy.delete(0, END)

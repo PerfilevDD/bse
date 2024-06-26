@@ -33,10 +33,7 @@ namespace BSE {
         // Getters and Setters
         std::vector<BalanceAndAsset> get_balances();
 
-        pybind11::list get_balances_as_python_list() {
-            pybind11::list balances = pybind11::cast(get_balances());
-            return balances;
-        }
+        int get_balance(int asset_id);
 
         int get_user_id() {
             return user_id;

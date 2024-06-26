@@ -59,16 +59,27 @@ def get_trade_pair(pair_id: int, db: Annotated[Database, Depends(get_database_ob
 async def create_trade(trade: Trade, db: Annotated[Database, Depends(get_database_object)],
                        current_user: Annotated[User, Depends(get_current_user)]):
     try:
-        new_trade = TradePair(db, trade.trade_pair_id)
-        new_trade.create_order(new_trade.get_trade_pair_id(), current_user.get_user_id(), trade.amount, trade.price,
+        if trade.amount <= 0 or trade.price <= 0:
+            raise HTTPException(status_code=500, detail="We are not dumb.")
+        trade_pair = TradePair(db, trade.trade_pair_id)
+        payment_asset = trade_pair.get_price_asset() if trade.buy else trade_pair.get_base_asset()
+        balance = current_user.get_balance(payment_asset)
+
+        if balance < (trade.amount * trade.price):
+            raise HTTPException(status_code=500, detail="You are poor.")
+
+
+
+        trade_pair.create_order(trade_pair.get_trade_pair_id(), current_user.get_user_id(), trade.amount, trade.price,
                                trade.buy)
         await websocket_clients_manager.process_orderbooks_update(trade.trade_pair_id)
         await websocket_clients_manager.process_balance_updates(trade.trade_pair_id)
         return {"status": "complete"}
 
+    except HTTPException as e:
+        raise e
+
     except Exception as e:
-        print(e)
-        print(traceback.format_exc())
         raise HTTPException(status_code=500, detail="Trade couldn't be completed")
 
 
