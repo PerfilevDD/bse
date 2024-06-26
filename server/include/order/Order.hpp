@@ -20,6 +20,7 @@ namespace BSE {
 
         // Constructor to create existing orders without insert
         Order(Database &Database,
+              int order_id,
               int trader_id,
               int pair_id,
               int price,
