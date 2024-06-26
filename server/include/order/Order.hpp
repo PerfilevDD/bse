@@ -31,6 +31,18 @@ namespace BSE {
 
 
         Order(Database &Database,
+              int order_id,
+              int trader_id,
+              int pair_id,
+              int price,
+              int amount,
+              int fullfilled_amount,
+              int completed_timestamp,
+              bool completed,
+              bool buy);
+
+
+        Order(Database &Database,
               int order_id);
 
         inline static std::string create_table =
@@ -43,7 +55,7 @@ namespace BSE {
                 "fullfilled_amount INT NOT NULL,"
                 "completed BOOL NOT NULL DEFAULT FALSE,"
                 "buy BOOL NOT NULL,"
-                "completed_timestamp datetime DEFAULT NULL);";
+                "completed_timestamp integer DEFAULT NULL);";
 
         int get_price() const {
             return price;
@@ -61,17 +73,32 @@ namespace BSE {
             return trader_id;
         }
 
-        bool is_completed() {
+        int get_order_id() const {
+            return order_id;
+        }
+
+        int get_pair_id() const {
+            return pair_id;
+        }
+
+        int get_completed_timestamp() const {
+            return completed_timestamp;
+        }
+
+        bool is_completed()  const {
             return completed;
         }
 
-        bool is_buy() {
+        bool is_buy()  const {
             return buy;
         }
 
         void set_completed(bool c);
 
         void set_fullfilled_amount(int new_fullfilled_amount);
+
+
+        static std::vector<Order> get_all_completed_orders(Database &db);
 
 
     private:
@@ -82,6 +109,7 @@ namespace BSE {
         int price;
         int amount;
         int fullfilled_amount;
+        long completed_timestamp;
         bool buy;
         bool completed;
     };

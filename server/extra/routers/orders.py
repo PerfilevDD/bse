@@ -23,6 +23,21 @@ router = APIRouter(
 # TRADES --------------------------
 
         
+@router.get("/orders/all")
+def get_all_completed_orders(db: Annotated[Database, Depends(get_database_object)]):
+    all_orders = Order.get_all_completed_orders(db)
+    return {
+        "order": [{
+            "order_id": t.get_order_id(),
+            "trader_id": t.get_trader_id(),
+            "price": t.get_price(),
+            "amount": t.get_amount(),
+            "fullfilled_amount": t.get_fullfilled_amount(),
+            "completed_timestamp": t.get_completed_timestamp(),
+            "completed": t.is_completed(),
+            "buy": t.is_buy()
+        } for t in all_orders]
+    }
 
 
 @router.get("/orders/{pair_id}")
@@ -49,6 +64,7 @@ def get_open_orders(pair_id: int, db: Annotated[Database, Depends(get_database_o
 def set_order_complete(order_id: int, db: Annotated[Database, Depends(get_database_object)]):
     order = Order(db, order_id)
     order.set_completed(1)
+
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
