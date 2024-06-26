@@ -115,7 +115,7 @@ class TradePair(Tk):
         entry_amount.config(font=("Courier", 14))
         entry_amount.grid(row=2, column=2, padx=20, pady=5)
 
-        Button(buy, text=f"BUY --", command=lambda i=0: self.buy_func(feet_price, feet_amount), width=18, height=2,
+        Button(buy, text=f"BUY --", command=lambda i=0: self.create_order(feet_price.get(), feet_amount.get(), True), width=18, height=2,
                bg="red",
                fg="white").grid(column=2, row=3)
 
@@ -153,7 +153,7 @@ class TradePair(Tk):
         entry_amount.config(font=("Courier", 14))
         entry_amount.grid(row=2, column=3, padx=20, pady=5)
 
-        Button(sell, text=f"SELL --", command=lambda i=0: self.sell_func(feet_price_sell, feet_amount_sell), width=18,
+        Button(sell, text=f"SELL --", command=lambda i=0: self.create_order(feet_price_sell.get(), feet_amount_sell.get(), False), width=18,
                height=2,
                bg="green", fg="white").grid(column=3, row=3)
 
@@ -197,39 +197,21 @@ class TradePair(Tk):
 
         graphic.after(10000, self.update_graphic)
 
-    def buy_func(self, feet_price, feet_amount):
-
-        price = feet_price.get()
-        amount = feet_amount.get()
-
+    def create_order(self, price, amount, buy):
+        headers = {"Authorization": "Bearer " + self.state.token}
         try:
-            data = {'trader_id': self.state.user_id, 'item': 'FRC', 'pair_item': 'POEUR', 'price': price,
-                    'item_amount': amount}
-            r = requests.post(f"{self.state.url}/trade", json=data)
+            data = {'trade_pair_id': self.pair_id,
+                    'amount': int(amount),
+                    'price': int(price),
+                    'buy': buy
+                    }
+            r = requests.post(f"{self.state.url}/trade/create", json=data, headers=headers)
             r.raise_for_status()
-            r.json()['status'] == 'trade reg complete'
 
-            messagebox.showinfo("", f"comlete")
+            messagebox.showinfo("", f"Order created")
             return r.json()
 
         except requests.exceptions.RequestException as e:
-            messagebox.showinfo("", f"No Internet!")
-            return None
+            messagebox.showinfo("", f"Error!")
+        return None
 
-    def sell_func(self, feet_price, feet_amount):
-        price = feet_price.get()
-        amount = feet_amount.get()
-
-        try:
-            data = {'trader_id': self.state.user_id, 'item': 'POEUR', 'pair_item': 'FRC', 'price': price,
-                    'item_amount': amount}
-            r = requests.post(f"{self.state.url}/trade", json=data)
-            r.raise_for_status()
-            r.json()['status'] == 'trade reg complete'
-
-            messagebox.showinfo("", f"comlete")
-            return r.json()
-
-        except requests.exceptions.RequestException as e:
-            messagebox.showinfo("", f"No Internet!")
-            return None
