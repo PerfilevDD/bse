@@ -84,7 +84,7 @@ Order::Order(Database &Database,
              int price,
              int amount,
              int fullfilled_amount,
-             int completed_timestamp,
+             const std::string& completed_timestamp,
              bool completed,
              bool buy) : db(Database),
                          order_id(order_id),
@@ -108,7 +108,7 @@ void Order::set_completed(bool c) {
     auto value = std::chrono::duration_cast<std::chrono::milliseconds>(epoch);
     long time_milseconds = value.count();
 
-    sqlpp11(sqlpp::update(orderTable).set(orderTable.completed = c, orderTable.completed_timestamp = time_milseconds).where(orderTable.id == order_id));
+    sqlpp11(sqlpp::update(orderTable).set(orderTable.completed = c, orderTable.completed_timestamp = std::to_string(time_milseconds)).where(orderTable.id == order_id));
     completed = c;
 }
 

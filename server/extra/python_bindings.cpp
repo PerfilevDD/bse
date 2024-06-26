@@ -26,8 +26,8 @@ PYBIND11_MODULE(BSE, m) {
 
     pybind11::class_<Order>(m, "Order")
             .def(pybind11::init<Database &, int, int, int, int, bool>())
-            .def(pybind11::init<Database &, int, int, int, int, int, int, int, bool>())
-            .def(pybind11::init<Database &, int, int, int, int, int, int, int, int, bool>())
+            .def(pybind11::init<Database &, int, int, int, int, int, int, bool, bool>())
+            .def(pybind11::init<Database &, int, int, int, int, int, int, std::string&, bool, bool>())
             .def(pybind11::init<Database &, int>())
             .def("get_trader_id", &Order::get_trader_id)
             .def("get_price", &Order::get_price)
