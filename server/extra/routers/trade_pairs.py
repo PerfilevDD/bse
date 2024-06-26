@@ -1,3 +1,4 @@
+import traceback
 from datetime import timedelta, datetime, timezone
 from typing import Annotated
 
@@ -12,6 +13,7 @@ from jwt.exceptions import InvalidTokenError
 
 from BSE import User as BSEUser, Database, TradePair
 from routers.users import get_current_user
+from routers.websocket import websocket_clients_manager
 from models.models import Trade, User
 
 db = Database()
@@ -61,10 +63,14 @@ async def create_trade(trade: Trade, db: Annotated[Database, Depends(get_databas
         new_trade = TradePair(db, trade.trade_pair_id)
         new_trade.create_order(new_trade.get_trade_pair_id(), current_user.get_user_id(), trade.amount, trade.price,
                                trade.buy)
+        await websocket_clients_manager.process_orderbooks_update(trade.trade_pair_id)
+        await websocket_clients_manager.process_balance_updates(trade.trade_pair_id)
         return {"status": "complete"}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail="Trading Pair can not be created")
+        print(e)
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail="Trade couldn't be completed")
 
 
 @router.get("/trade/all")

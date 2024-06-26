@@ -54,6 +54,9 @@ class WebsocketManager:
         await self._send_message_to_session(session_id=session_id, message_dict={"type": "confirmation"})
 
     async def process_balance_updates(self, pair_id):
+        if pair_id not in self.clients_for_pair_id:
+            return
+
         for session_id, user_id in self.clients_for_pair_id[pair_id]:
             user = BSEUser(self.db, user_id)
             user_balance = user.get_balances()
@@ -66,6 +69,8 @@ class WebsocketManager:
             await self._send_message_to_session(session_id, message_dict)
 
     async def process_orderbooks_update(self, pair_id):
+        if pair_id not in self.clients_for_pair_id:
+            return
         for session_id, user_id in self.clients_for_pair_id[pair_id]:
             trade_pair = TradePair(self.db, pair_id)
             open_orders = trade_pair.get_open_orders(pair_id)
@@ -101,7 +106,6 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             message = await websocket.receive_text()
             data = json.loads(message)
-            print(data)
             if data["action"] == "register":
                 user_id = data["user_id"]
                 trade_id = data["trade_id"]
