@@ -9,3 +9,6 @@ requests
 pillow
 pyjwt
 passlib
+matplotlib
+ttkbootstrap
+jwt
