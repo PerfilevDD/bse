@@ -23,22 +23,6 @@ from PIL import Image, ImageTk
 state = WindowState()
 
 
-# Balance
-def get_user_balance(email: str):
-    global balanceFRC, balancePOEUR
-    try:
-        r = requests.get(f"{url}/balance{email}")
-        r.raise_for_status()
-        balanceFRC = r.json()['frc']
-        balancePOEUR = r.json()['poeur']
-    except requests.exceptions.RequestException as e:
-        messagebox.showerror("", f"No Internet")
-
-    # Registrarion
-
-    # MAINWINDOW ------------------------------
-
-
 async def listen_for_updates():
     ws_url = url.replace('http', 'ws').replace('htpps', 'wss') + '/ws'
     print("Connecting")
@@ -111,27 +95,6 @@ async def listen_for_updates():
 
 
 # ACCEPT ORDER
-
-def accept_order(item):
-    string = item.get(item.curselection()[0])[25:]
-    dataset = list(string.split(","))
-
-    order_id = dataset[0]
-    trader_id = dataset[1]
-    type_dataset = dataset[2]
-    price = dataset[3]
-    amount = dataset[4]
-
-    try:
-        data = {'email': user_email, 'order_id': order_id, 'trader_id': trader_id, 'item': type_dataset, 'price': price,
-                'item_amount': amount}
-        r = requests.post(f"{url}/accept_order", json=data)
-        r.raise_for_status()
-        return r.json()
-    except:
-        messagebox.showinfo("", f"No Internet!")
-
-    print(f"{order_id} {trader_id} {type_dataset} {price} {amount}")
 
 
 def start_websocket():
