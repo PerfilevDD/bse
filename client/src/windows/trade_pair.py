@@ -1,9 +1,12 @@
+import asyncio
+import json
+import threading
 from tkinter import Tk, Listbox, ttk, StringVar, Button, BOTH, messagebox, END
 
 import requests
+import websockets
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from ttkbootstrap import Style
 
 from state import WindowState
 
@@ -28,6 +31,13 @@ def _parse_orderbook(orders):
 
 
 class TradePair(Tk):
+    listbox_sell: Listbox
+    listbox_buy: Listbox
+    label_text: StringVar
+
+    base_asset_ticker: str
+    price_asset_ticker: str
+
     def __init__(self, pair_id: int, state: WindowState, return_to_selector_fn):
         super().__init__()
 
@@ -47,14 +57,43 @@ class TradePair(Tk):
             return_to_selector_fn()
             return
 
+        self.base_asset_ticker = self.assets[self.trading_pair['base_asset']]['ticker'].upper()
+        self.price_asset_ticker = self.assets[self.trading_pair['price_asset']]['ticker'].upper()
+
         self.open_trading_ui()
+        self.update_orderbook()
+
+        self.ws_thread = threading.Thread(target=asyncio.run, args=(self.listen_updates(),), daemon=True)
+        self.ws_thread.start()
+
+    async def listen_updates(self):
+        ws_url = self.state.url.replace('http', 'ws').replace('htpps', 'wss') + '/ws'
+        websocket = await websockets.connect(ws_url)
+        await websocket.send(json.dumps(
+            {"action": "register", "user_id": self.state.user_id, "pair_id": self.pair_id}
+        ))
+
+        while True:
+            try:
+                message = await websocket.recv()
+                data = json.loads(message)
+                if "type" in data and data["type"] == "orderbook":
+                    self.orders = data["data"]
+                    self.update_orderbook()
+
+                if "type" in data and data["type"] == "balances":
+                    print(self.balances)
+                    self.balances = {
+                        balance['ticker']: balance
+                        for balance in data["data"]
+                    }
+                    self.update_balances()
+
+            except:
+                pass
 
     def open_trading_ui(self):
         # Main window
-        self.title = "Bonn Stock Exchange"
-
-        # Style settings
-        style = Style('darkly')
 
         # Window settings
         mainframe = ttk.Frame(self, padding="70 70 70 70")
@@ -78,22 +117,20 @@ class TradePair(Tk):
         buy.grid_rowconfigure(0, weight=1)
 
         # Scrollbox
-        base_asset_ticker = self.assets[self.trading_pair['base_asset']]['ticker'].upper()
-        price_asset_ticker = self.assets[self.trading_pair['price_asset']]['ticker'].upper()
-        legend_label = ttk.Label(mainframe,
-                                 text=f"Trading Pair: {base_asset_ticker}/{price_asset_ticker}\n" \
-                                      f"Balance [{base_asset_ticker}]: {self.balances[base_asset_ticker.lower()]['balance'] / 100}\n" + \
-                                      f"Balance [{price_asset_ticker}]: {self.balances[price_asset_ticker.lower()]['balance'] / 100}\n"
-                                 )
+        text = f"Trading Pair: {self.base_asset_ticker}/{self.price_asset_ticker}\n" \
+               f"Balance [{self.base_asset_ticker}]: {self.balances[self.base_asset_ticker.lower()]['balance'] / 100}\n" + \
+               f"Balance [{self.price_asset_ticker}]: {self.balances[self.price_asset_ticker.lower()]['balance'] / 100}\n"
+
+        self.label_text = StringVar()
+        self.label_text.set(text)
+
+        legend_label = ttk.Label(mainframe, textvariable=self.label_text)
         legend_label.config(font=("Courier", 24))
         legend_label.grid(column=0, row=0)
 
-        listbox_buy = Listbox(mainframe)
-        listbox_buy.config(font=("Courier", 14), width=22)
-        listbox_buy.grid(row=2, column=0, padx=20, )
-
-        for amount, price in _parse_orderbook(self.orders['buy']):
-            listbox_buy.insert(END, f"{amount} {base_asset_ticker} for {price} {price_asset_ticker}")
+        self.listbox_buy = Listbox(mainframe)
+        self.listbox_buy.config(font=("Courier", 14), width=22)
+        self.listbox_buy.grid(row=2, column=0, padx=20, )
 
         # Labels
 
@@ -115,7 +152,8 @@ class TradePair(Tk):
         entry_amount.config(font=("Courier", 14))
         entry_amount.grid(row=2, column=2, padx=20, pady=5)
 
-        Button(buy, text=f"BUY --", command=lambda i=0: self.create_order(feet_price.get(), feet_amount.get(), True), width=18, height=2,
+        Button(buy, text=f"BUY --", command=lambda i=0: self.create_order(feet_price.get(), feet_amount.get(), True),
+               width=18, height=2,
                bg="red",
                fg="white").grid(column=2, row=3)
 
@@ -127,12 +165,10 @@ class TradePair(Tk):
         sell.grid_rowconfigure(0, weight=1)
 
         # Scrollbox
-        listbox_sell = Listbox(mainframe)
-        listbox_sell.config(font=("Courier", 14), width=22)
-        listbox_sell.grid(row=2, column=4)
+        self.listbox_sell = Listbox(mainframe)
+        self.listbox_sell.config(font=("Courier", 14), width=22)
+        self.listbox_sell.grid(row=2, column=4)
 
-        for amount, price in _parse_orderbook(self.orders['sell']):
-            listbox_sell.insert(END, f"{amount} {base_asset_ticker} for {price} {price_asset_ticker}")
         # Labels
 
         price_label = ttk.Label(sell, text=f"Price")
@@ -153,7 +189,8 @@ class TradePair(Tk):
         entry_amount.config(font=("Courier", 14))
         entry_amount.grid(row=2, column=3, padx=20, pady=5)
 
-        Button(sell, text=f"SELL --", command=lambda i=0: self.create_order(feet_price_sell.get(), feet_amount_sell.get(), False), width=18,
+        Button(sell, text=f"SELL --",
+               command=lambda i=0: self.create_order(feet_price_sell.get(), feet_amount_sell.get(), False), width=18,
                height=2,
                bg="green", fg="white").grid(column=3, row=3)
 
@@ -172,11 +209,7 @@ class TradePair(Tk):
         fig, ax = plt.subplots()
         canvas = FigureCanvasTkAgg(fig, master=frame)
         canvas.get_tk_widget().pack(fill=BOTH, expand=1)
-
-        # start_websocket()
         entry_price.focus()
-
-        self.mainloop()
 
     def update_graphic(self, graphic, canvas, ax):
         database = []
@@ -215,3 +248,19 @@ class TradePair(Tk):
             messagebox.showinfo("", f"Error!")
         return None
 
+    def update_orderbook(self):
+        self.listbox_buy.delete(0, END)
+        for amount, price in _parse_orderbook(self.orders['buy']):
+            self.listbox_buy.insert(END, f"{amount} {self.base_asset_ticker} for {price} {self.price_asset_ticker}")
+
+        self.listbox_sell.delete(0, END)
+        for amount, price in _parse_orderbook(self.orders['sell']):
+            self.listbox_sell.insert(END, f"{amount} {self.base_asset_ticker} for {price} {self.price_asset_ticker}")
+
+    def update_balances(self):
+        text = f"Trading Pair: {self.base_asset_ticker}/{self.price_asset_ticker}\n" \
+               f"Balance [{self.base_asset_ticker}]: {self.balances[self.base_asset_ticker.lower()]['balance'] / 100}\n" + \
+               f"Balance [{self.price_asset_ticker}]: {self.balances[self.price_asset_ticker.lower()]['balance'] / 100}\n"
+
+        self.label_text.set(text)
+        self.update()

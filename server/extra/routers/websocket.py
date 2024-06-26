@@ -108,13 +108,13 @@ async def websocket_endpoint(websocket: WebSocket):
             data = json.loads(message)
             if data["action"] == "register":
                 user_id = data["user_id"]
-                trade_id = data["trade_id"]
+                trade_id = data["pair_id"]
                 websocket_clients_manager.register_client_for_pair_id(session_id, user_id, trade_id)
                 await websocket_clients_manager.send_confirmation(session_id)
 
             if data["action"] == "leave":
                 user_id = data["user_id"]
-                trade_id = data["trade_id"]
+                trade_id = data["pair_id"]
                 websocket_clients_manager.remove_client_for_pair_id(session_id, user_id, trade_id)
                 await websocket_clients_manager.send_confirmation(session_id)
 
