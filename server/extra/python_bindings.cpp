@@ -26,11 +26,14 @@ PYBIND11_MODULE(BSE, m) {
 
     pybind11::class_<Order>(m, "Order")
             .def(pybind11::init<Database &, int, int, int, int, bool>())
+            .def(pybind11::init<Database &, int, int, int, int, int, int, bool>())
+            .def(pybind11::init<Database &, int>())
             .def("get_trader_id", &Order::get_trader_id)
             .def("get_price", &Order::get_price)
             .def("get_amount", &Order::get_amount)
             .def("get_fullfilled_amount", &Order::get_fullfilled_amount)
             .def("is_buy", &Order::is_buy)
+            .def("set_completed", &Order::set_completed)
             .def("is_completed", &Order::is_completed);
 
     pybind11::class_<OrderDB>(m, "OrderDB")

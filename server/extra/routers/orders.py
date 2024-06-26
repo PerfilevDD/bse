@@ -10,7 +10,7 @@ from dependencies import get_database_object
 
 from jwt.exceptions import InvalidTokenError
 
-from BSE import User as BSEUser, Database, TradePair
+from BSE import User as BSEUser, Database, TradePair, Order
 
 
 db = Database()
@@ -44,6 +44,11 @@ def get_open_orders(pair_id: int, db: Annotated[Database, Depends(get_database_o
         "buy": buy_orders,
         "sell": sell_orders
     }
+    
+@router.post("/orders/complete")
+def set_order_complete(order_id: int, db: Annotated[Database, Depends(get_database_object)]):
+    order = Order(db, order_id)
+    order.set_completed(1)
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
