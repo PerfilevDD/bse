@@ -79,6 +79,10 @@ class TradePair(Tk):
         while self.open:
             try:
                 message = await self.websocket.recv()
+
+                if not self.open:
+                    break
+
                 data = json.loads(message)
                 if "type" in data and data["type"] == "orderbook":
                     self.orders = data["data"]
@@ -102,9 +106,10 @@ class TradePair(Tk):
             {"type": "leave", "user_id": self.state.user_id, "pair_id": self.pair_id}
         ))
 
+        await self.websocket.close()
+
     def on_close(self):
         self.open = False
-        self.ws_thread.join()
         self.destroy()
         self.return_to_selector_fn()
 

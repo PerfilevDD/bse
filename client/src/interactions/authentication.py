@@ -11,6 +11,6 @@ def server_auth_user(url, email, password):
         return token, response_data
     except requests.exceptions.RequestException as e:
         try:
-            return r.json()['detail']
+            return "", r.json()['detail']
         except:
-            return None
+            return None, None
