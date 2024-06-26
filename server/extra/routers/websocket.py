@@ -33,7 +33,8 @@ class WebsocketManager:
         if pair_id not in self.clients_for_pair_id:
             self.clients_for_pair_id[pair_id] = []
 
-        self.clients_for_pair_id[pair_id].append((session_id, user_id))
+        if (session_id, user_id) not in self.clients_for_pair_id[pair_id]:
+            self.clients_for_pair_id[pair_id].append((session_id, user_id))
 
     def remove_client_for_pair_id(self, session_id, user_id, pair_id):
         if pair_id not in self.clients_for_pair_id:
@@ -44,13 +45,15 @@ class WebsocketManager:
         except:
             pass
 
-    def _send_message_to_session(self, session_id, message_dict):
+    async def _send_message_to_session(self, session_id, message_dict):
         try:
-            self.connected_sockets[session_id].send_json(message_dict)
+            await self.connected_sockets[session_id].send_json(message_dict)
         except:
             pass
+    async def send_confirmation(self, session_id):
+        await self._send_message_to_session(session_id=session_id, message_dict={"type": "confirmation"})
 
-    def process_balance_updates(self, pair_id):
+    async def process_balance_updates(self, pair_id):
         for session_id, user_id in self.clients_for_pair_id[pair_id]:
             user = BSEUser(self.db, user_id)
             user_balance = user.get_balances()
@@ -60,9 +63,9 @@ class WebsocketManager:
                     "name": asset.name,
                     "ticker": asset.ticker,
                 } for asset in user_balance]}
-            self._send_message_to_session(session_id, message_dict)
+            await self._send_message_to_session(session_id, message_dict)
 
-    def process_orderbooks_update(self, pair_id):
+    async def process_orderbooks_update(self, pair_id):
         for session_id, user_id in self.clients_for_pair_id[pair_id]:
             trade_pair = TradePair(self.db, pair_id)
             open_orders = trade_pair.get_open_orders(pair_id)
@@ -83,14 +86,14 @@ class WebsocketManager:
                 "sell": sell_orders
             }
             message_dict = { "type": "orderbook", "data": data}
-            self._send_message_to_session(session_id, message_dict)
+            await self._send_message_to_session(session_id, message_dict)
 
 
 websocket_clients_manager = WebsocketManager()
 
 router = APIRouter()
 
-@router.websocket("/ws}")
+@router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     session_id = websocket_clients_manager.add_client(websocket)
@@ -98,16 +101,18 @@ async def websocket_endpoint(websocket: WebSocket):
         while True:
             message = await websocket.receive_text()
             data = json.loads(message)
-
+            print(data)
             if data["action"] == "register":
                 user_id = data["user_id"]
                 trade_id = data["trade_id"]
                 websocket_clients_manager.register_client_for_pair_id(session_id, user_id, trade_id)
+                await websocket_clients_manager.send_confirmation(session_id)
 
             if data["action"] == "leave":
                 user_id = data["user_id"]
                 trade_id = data["trade_id"]
                 websocket_clients_manager.remove_client_for_pair_id(session_id, user_id, trade_id)
+                await websocket_clients_manager.send_confirmation(session_id)
 
     except Exception as e:
         websocket_clients_manager.remove_client(session_id)
