@@ -29,5 +29,6 @@ namespace BSE {
         int balance;
         std::string name;
         std::string ticker;
+        int asset_id;
     };
 }
