@@ -82,7 +82,7 @@ namespace BSE {
         for (const auto &asset: assets) {
             bool asset_found = false;           // Überprüft ob der Benutzer einen Saldo für das Asset hat, oder nicht.
             for (const auto &row: sqlppDb(      // Abrufen des Saldos des Benutzers für das aktuelle Asset
-                    sqlpp::select(balanceTable.balance).from(balanceTable).where(balanceTable.asset_id == asset.id))) {
+                    sqlpp::select(balanceTable.balance).from(balanceTable).where(balanceTable.asset_id == asset.id && balanceTable.user_id == user_id))) {
                 balances.push_back({
                                            static_cast<int>(row.balance),
                                            asset.name.text,

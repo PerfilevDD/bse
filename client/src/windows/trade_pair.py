@@ -97,6 +97,7 @@ class TradePair(Tk):
         while self.open:
             try:
                 message = await self.websocket.recv()
+                print(message)
 
                 if not self.open:
                     break
