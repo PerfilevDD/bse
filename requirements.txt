@@ -11,4 +11,3 @@ pyjwt
 passlib
 matplotlib
 ttkbootstrap
-jwt

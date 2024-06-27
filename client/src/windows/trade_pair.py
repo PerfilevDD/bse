@@ -64,7 +64,7 @@ class TradePair(Tk):
         if not self.trading_pair or not self.assets or not self.balances:
             messagebox.showerror(title="Parsing error.",
                                  message="Error while parsing data.")
-            self.destroy()
+            self.after(500, self.destroy())
             return_to_selector_fn()
             return
 
@@ -73,8 +73,10 @@ class TradePair(Tk):
 
         self.open_trading_ui()
         self.update_orderbook()
-        
-        
+        self.update_graphic()
+
+
+
         style = Style('darkly')
 
         self.ws_thread = threading.Thread(target=asyncio.run, args=(self.listen_updates(),), daemon=True)
@@ -133,9 +135,9 @@ class TradePair(Tk):
 
     def on_close(self):
         self.open = False
-        self.destroy()
+        self.after(500, self.destroy)
         self.return_to_selector_fn()
-        
+
     def open_trading_ui(self):
         
         # Main window
@@ -154,8 +156,8 @@ class TradePair(Tk):
 
         # Scrollbox
         text = f"Trading Pair: {self.base_asset_ticker}/{self.price_asset_ticker}\n" \
-               f"Balance [{self.base_asset_ticker}]: {self.balances[self.base_asset_ticker.lower()]['balance'] / 100}\n" + \
-               f"Balance [{self.price_asset_ticker}]: {self.balances[self.price_asset_ticker.lower()]['balance'] / 100}\n"
+               f"Balance [{self.base_asset_ticker}]: {self.balances[self.base_asset_ticker.lower()]['balance']}\n" + \
+               f"Balance [{self.price_asset_ticker}]: {self.balances[self.price_asset_ticker.lower()]['balance']}\n"
 
         self.label_text = StringVar()
         self.label_text.set(text)
@@ -167,11 +169,7 @@ class TradePair(Tk):
 
         # Labels
 
-        
-        empty_label = ttk.Label(mainframe, text=" ")
-        empty_label.config(font=("Courier", 24))
-        empty_label.grid(column=0, row=0)
-        
+
         legend_label = ttk.Label(mainframe, textvariable=self.label_text)
         legend_label.config(font=("Courier", 24))
         legend_label.grid(column=1, row=0)
@@ -210,7 +208,7 @@ class TradePair(Tk):
         # Scrollbox
         self.listbox_sell = Listbox(mainframe)
         self.listbox_sell.config(font=("Courier", 14), width=22, height=20)
-        self.listbox_sell.grid(row=1, column=2)
+        self.listbox_sell.grid(row=1, column=2, padx=20)
 
         # Labels
 
@@ -244,11 +242,10 @@ class TradePair(Tk):
         graphic.grid_columnconfigure((0, 1), weight=1)
         graphic.grid_rowconfigure(0, weight=1)
         
-        self.fig, self.ax = plt.subplots(figsize=(12, 7))
+        self.fig, self.ax = plt.subplots(figsize=(10, 5))
         self.canvas = FigureCanvasTkAgg(self.fig, master=graphic)
         self.canvas.get_tk_widget().grid(column=0, row=0)
 
-        self.update_graphic()
 
 
 
@@ -266,17 +263,18 @@ class TradePair(Tk):
         self.ax.legend()
         
         self.canvas.draw()
-        self.after(10000, self.update_graphic)
-        
+
         
         
 
     def create_order(self, price, amount, buy):
         headers = {"Authorization": "Bearer " + self.state.token}
         try:
+            parsed_price = int(amount)
+            parsed_amount = int(amount)
             data = {'trade_pair_id': self.pair_id,
-                    'amount': int(amount),
-                    'price': int(price),
+                    'amount': parsed_amount,
+                    'price': parsed_price,
                     'buy': buy
                     }
             r = requests.post(f"{self.state.url}/trade/create", json=data, headers=headers)
@@ -309,8 +307,8 @@ class TradePair(Tk):
 
     def update_balances(self):
         text = f"Trading Pair: {self.base_asset_ticker}/{self.price_asset_ticker}\n" \
-               f"Balance [{self.base_asset_ticker}]: {self.balances[self.base_asset_ticker.lower()]['balance'] / 100}\n" + \
-               f"Balance [{self.price_asset_ticker}]: {self.balances[self.price_asset_ticker.lower()]['balance'] / 100}\n"
+               f"Balance [{self.base_asset_ticker}]: {self.balances[self.base_asset_ticker.lower()]['balance']}\n" + \
+               f"Balance [{self.price_asset_ticker}]: {self.balances[self.price_asset_ticker.lower()]['balance']}\n"
 
         self.label_text.set(text)
         self.update()
