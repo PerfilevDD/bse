@@ -42,11 +42,11 @@ class Bot:
 
         print("Loading balances")
         self.balance_base_asset = \
-        requests.get(url + "/balance/" + str(self.trading_pair['base_asset']), headers=self.auth_header).json()[
-            "balance"]
+            requests.get(url + "/balance/" + str(self.trading_pair['base_asset']), headers=self.auth_header).json()[
+                "balance"]
         self.balance_price_asset = \
-        requests.get(url + "/balance/" + str(self.trading_pair['price_asset']), headers=self.auth_header).json()[
-            "balance"]
+            requests.get(url + "/balance/" + str(self.trading_pair['price_asset']), headers=self.auth_header).json()[
+                "balance"]
 
         if self.balance_base_asset < 1000000:
             params = {"change": 1000000 - self.balance_base_asset, "asset_id": self.trading_pair["base_asset"]}
@@ -77,7 +77,6 @@ class Bot:
                     break
 
                 data = json.loads(message)
-                print("Received message from websocket", data)
                 if "type" in data and data["type"] == "orderbook":
                     self.orders = data["data"]
 
@@ -103,24 +102,29 @@ class Bot:
     def perform_trade(self):
         buy = random.choice([True, False])
         fullfill_order = random.choice([True, False])
+        random_price = random.choice([True, False])
 
         print(f"Bot is {'buying' if buy else 'selling'} while {'fullfilling a' if fullfill_order else 'creating a new'} order")
         # Find order to fullfill
         orderbook = self.orders["sell" if buy else "buy"]
-        best_order = orderbook[0]
-        better_price = best_order['price'] + 1 if buy else best_order['price'] - 1
 
-        if best_order['price'] + 100 > (self.balance_price_asset if buy else self.balance_base_asset):
-            fullfill_order = False
-            better_price = random.randint(1, 50)
+        if not orderbook:
+            price = random.randint(1, 200)
+            amount = 1
+        elif fullfill_order:
+            price = orderbook[0]['price']
+            amount = 1
+        elif not fullfill_order:
+            price = random.randint(1, 200) if random_price else \
+                (orderbook[0]['price'] + 1 if buy else orderbook[0]['price'] - 1)
+            amount = 1
 
         our_order = {
             'trade_pair_id': self.pair_id,
-            'amount': 1,
-            'price': best_order['price'] if fullfill_order else better_price,
+            'amount': amount,
+            'price': price,
             'buy': buy
         }
-
 
         r = requests.post(self.url + "/trade/create", json=our_order, headers=self.auth_header)
         print(r.json())
@@ -132,5 +136,7 @@ if __name__ == "__main__":
         try:
             time.sleep(1)
             bot.perform_trade()
+        except KeyboardInterrupt:
+            exit()
         except:
             pass

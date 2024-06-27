@@ -270,7 +270,7 @@ class TradePair(Tk):
     def create_order(self, price, amount, buy):
         headers = {"Authorization": "Bearer " + self.state.token}
         try:
-            parsed_price = int(amount)
+            parsed_price = int(price)
             parsed_amount = int(amount)
             data = {'trade_pair_id': self.pair_id,
                     'amount': parsed_amount,

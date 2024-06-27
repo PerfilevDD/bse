@@ -4,6 +4,7 @@ import jwt
 import requests
 
 from interactions.authentication import server_auth_user
+from interactions.user import get_me
 from state import WindowState
 
 
@@ -71,9 +72,9 @@ class AuthenticationWindow(Tk):
             # Wellcome func HERE
             messagebox.showinfo("", f"Welcome")
 
-            self.state.user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
-            self.state.user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
-            # get_user_balance(user_email)
+            me = get_me(self.state.url, token)
+            self.state.user_id = me["user_id"]
+            self.state.user_email = me["email"]
             self.state.token = token
 
             self.destroy()
@@ -111,9 +112,9 @@ class AuthenticationWindow(Tk):
                 # Wellcome func HERE
                 messagebox.showinfo("", f"Welcome")
 
-                self.state.user_id = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["user_id"]
-                self.state.user_email = jwt.decode(token, self.state.SECRET_KEY, algorithms=["HS256"])["sub"]
-                # get_user_balance(user_email)
+                me = get_me(self.state.url, token)
+                self.state.user_id = me["user_id"]
+                self.state.user_email = me["email"]
                 self.state.token = token
 
                 self.destroy()

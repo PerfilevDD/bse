@@ -88,7 +88,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)],
 @router.get("/me")
 def get_user_details(current_user: Annotated[User, Depends(get_current_user)]):
     return {
-        "user_id": current_user.get_user_id()
+        "user_id": current_user.get_user_id(),
+        "email": current_user.get_email()
     }
 
 @router.post("/token")

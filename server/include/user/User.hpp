@@ -39,6 +39,10 @@ namespace BSE {
             return user_id;
         };
 
+        std::string get_email() {
+            return email;
+        };
+
 
 
     private:
